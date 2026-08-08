@@ -1,0 +1,9 @@
+node_modules/
+.DS_Store
+*.pem
+*.p12
+**/secrets/*.json
+!**/secrets/.gitignore
+!**/templates/play-console/secrets/README.md
+.env
+.env.*

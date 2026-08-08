@@ -1,0 +1,17 @@
+{
+  "name": "play-console-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "auth:check": "node ./src/auth-check.mjs",
+    "products:list": "node ./src/list-products.mjs",
+    "products:upsert-credits": "node ./src/upsert-credit-products.mjs",
+    "subscriptions:upsert": "node ./src/upsert-subscriptions.mjs",
+    "listing:upsert": "node ./src/upsert-store-listing.mjs",
+    "listing:upload-assets": "node ./src/upload-store-assets.mjs",
+    "testing:create-closed": "node ./src/create-closed-test.mjs"
+  },
+  "dependencies": {
+    "googleapis": "^164.1.0"
+  }
+}
