@@ -25,6 +25,29 @@ When the user (or dashboard) shows **Connection issue** / **Make sure the Servic
 
 Do **not** invent alternate upload endpoints (`credentials_json`, multipart `/credentials`, etc.) — they 404 / 400 against API v2. Prefer opening the app settings URL and, if helpful, copying the local JSON to the clipboard (`pbcopy`) so the user only pastes + Saves.
 
+### Google Cloud Pub/Sub API (RTDN)
+
+RC dashboard error **"Google Cloud Pub/Sub API must first be enabled"** means the **same GCP project** as the SA JSON (`project_id` field) does not have `pubsub.googleapis.com` enabled.
+
+| Automatable? | How |
+| --- | --- |
+| Yes, with **project Owner/Editor** user credentials | `gcloud services enable pubsub.googleapis.com` (and grant `roles/pubsub.editor` + `roles/monitoring.viewer` on the Play SA) |
+| Usually **no** with the Play Publisher SA alone | That SA often lacks `serviceusage.services.enable` → `403 Permission denied to get/enable service` |
+
+Also enable (RC checklist): `androidpublisher.googleapis.com`, `playdeveloperreporting.googleapis.com`.
+
+App-repo helper (QuickDoc pattern): `scripts/play-console/enable-rc-gcp-apis.sh` — requires `gcloud auth login` as a human Owner, not the Play SA JSON.
+
+After enable + IAM:
+
+1. Re-upload SA JSON in RC if roles were added (or regenerate key).  
+2. RC Play app → Connect to Google (creates/selects Pub/Sub topic).  
+3. Play Console → Monetize → Monetization setup → paste Topic ID → Save → Send test notification.  
+4. If tests fail, grant `roles/pubsub.publisher` on the topic to `google-play-developer-notifications@system.gserviceaccount.com`.
+
+Console one-click enable:  
+`https://console.cloud.google.com/apis/library/pubsub.googleapis.com?project=<PROJECT_ID>`
+
 ## Products
 
 - Creating a product **registers** it in RC only — it does not create Play/ASC IAP
