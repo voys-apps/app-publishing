@@ -31,21 +31,36 @@ RC dashboard error **"Google Cloud Pub/Sub API must first be enabled"** means th
 
 | Automatable? | How |
 | --- | --- |
-| Yes, with **project Owner/Editor** user credentials | `gcloud services enable pubsub.googleapis.com` (and grant `roles/pubsub.editor` + `roles/monitoring.viewer` on the Play SA) |
-| Usually **no** with the Play Publisher SA alone | That SA often lacks `serviceusage.services.enable` → `403 Permission denied to get/enable service` |
+| **Yes**, if the SA (or user) is **project Owner/Editor** with `serviceusage.services.enable` | Service Usage API / `gcloud services enable pubsub.googleapis.com` |
+| **No**, with a narrow Play-only SA | `403 Permission denied to get/enable service` — ask user to grant Owner (or run as human Owner), then retry |
 
-Also enable (RC checklist): `androidpublisher.googleapis.com`, `playdeveloperreporting.googleapis.com`.
+Also enable (RC checklist): `androidpublisher.googleapis.com`, `playdeveloperreporting.googleapis.com`, and often `cloudresourcemanager.googleapis.com` + `iam.googleapis.com` before IAM binds.
 
-App-repo helper (QuickDoc pattern): `scripts/play-console/enable-rc-gcp-apis.sh` — requires `gcloud auth login` as a human Owner, not the Play SA JSON.
+**When SA is Owner, agents should automate GCP side via the SA JSON** (`scripts/play-console/secrets/play-api-service-account.json`):
 
-After enable + IAM:
+1. Enable `pubsub.googleapis.com` (+ related APIs above).  
+2. Grant IAM on the SA: `roles/pubsub.editor` + `roles/monitoring.viewer`.  
+3. Create (or reuse) a Pub/Sub topic, e.g. `projects/<PROJECT_ID>/topics/revenuecat-play-notifications`.  
+4. On that topic, grant `roles/pubsub.publisher` to  
+   `google-play-developer-notifications@system.gserviceaccount.com`  
+   (required so Play can publish RTDN).  
+5. Tell the user the **Topic ID** string to paste.
 
-1. Re-upload SA JSON in RC if roles were added (or regenerate key).  
-2. RC Play app → Connect to Google (creates/selects Pub/Sub topic).  
-3. Play Console → Monetize → Monetization setup → paste Topic ID → Save → Send test notification.  
-4. If tests fail, grant `roles/pubsub.publisher` on the topic to `google-play-developer-notifications@system.gserviceaccount.com`.
+App-repo helper: `scripts/play-console/enable-rc-gcp-apis.sh` (`gcloud` as Owner) — same outcome as the Node Service Usage flow.
 
-Console one-click enable:  
+### What still needs humans (not RC/Play public APIs)
+
+After Pub/Sub is enabled and the topic exists:
+
+1. **RevenueCat dashboard** → Play app → Service credentials JSON uploaded (API cannot).  
+2. **RevenueCat** → Connect to Google / pick topic (or use the topic we created if listed).  
+3. **Play Console** → Monetize → **Monetization setup** → Real-time developer notifications → paste  
+   `projects/<PROJECT_ID>/topics/<TOPIC>` → notification content: subscriptions + voided + one-time → Save → **Send test notification**.  
+4. Confirm “Last received” on RC app settings.
+
+There is **no** supported Android Publisher / RevenueCat public API to set the Play Monetization Setup RTDN topic for you — that paste is Console-only.
+
+Console one-click enable (fallback):  
 `https://console.cloud.google.com/apis/library/pubsub.googleapis.com?project=<PROJECT_ID>`
 
 ## Products
