@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "console:open": "node ./src/open-console-handoffs.mjs",
+    "auth:brand:create": "node ./src/brand-create.mjs",
     "auth:google:status": "node ./src/google-status.mjs",
     "auth:google:apply": "node ./src/google-apply.mjs"
   }

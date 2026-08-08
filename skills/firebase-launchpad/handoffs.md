@@ -55,6 +55,19 @@ Agent: `open` app settings URL + `pbcopy` SA JSON when helpful; user pastes + Sa
 
 See [../auth-launchpad/handoffs.md](../auth-launchpad/handoffs.md).
 
+## admob-launchpad
+
+| # | Open URL | User action | Verify |
+| --- | --- | --- | --- |
+| 1 | `https://apps.admob.com/v2/apps/list` | Confirm account (already signed in) | — |
+| 2 | `https://apps.admob.com/v2/apps/create` | Android + iOS + ad units; paste IDs | `EXPO_PUBLIC_ADMOB_*` in env |
+
+```bash
+cd scripts/admob && CHROME_PROFILE_DIRECTORY="Profile 4" pnpm console:open
+```
+
+See [../admob-launchpad/handoffs.md](../admob-launchpad/handoffs.md).
+
 ## Shared rules
 
 1. Always list **what to click** in the chat (bullets), not only a bare URL  

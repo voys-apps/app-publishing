@@ -13,13 +13,13 @@ Agent **opens** these URLs and prints the bullets; **user** clicks/fills.
 | Clients | `https://console.cloud.google.com/auth/clients?project={id}` | **Create client** |
 | Create Web client | `https://console.cloud.google.com/auth/clients/create?project={id}` | Type **Web application**; redirect URI `https://{ref}.supabase.co/auth/v1/callback`; copy ID + secret |
 
-### Branding field suggestions (QuickDoc)
+### Branding field suggestions (example app)
 
-- App name: `QuickDoc`
-- Support email: team Google account / `support@voysapps.io` (if owned)
-- App domain / home: `https://voysapps.io/quickdoc` (or real marketing URL)
-- Privacy: `https://voysapps.io/quickdoc/privacy-policy` (match store listing)
-- Terms: `https://voysapps.io/quickdoc/terms` if available
+- App name: `{APP_DISPLAY_NAME}`
+- Support email: Google account that owns the Cloud project (user must pick in Console)
+- App domain / home: `https://voysapps.io/app/{slug}`
+- Privacy: `https://voysapps.io/app/{slug}/privacy-policy`
+- Terms: `https://voysapps.io/app/{slug}/terms-of-use`
 
 Logo: use Play/store icon ≥120×120; brand verification may take days — login works before verification (name/logo may not show).
 
@@ -30,6 +30,20 @@ Logo: use Play/store icon ≥120×120; brand verification may take days — logi
 | Google provider | `https://supabase.com/dashboard/project/{ref}/auth/providers` | Enable Google; paste Client ID + Secret (if no Management token) |
 | URL config | `https://supabase.com/dashboard/project/{ref}/auth/url-configuration` | Add `{scheme}://auth/oauth-callback` (+ Expo go/dev URLs if needed) |
 | Access token | `https://supabase.com/dashboard/account/tokens` | Create PAT → `SUPABASE_ACCESS_TOKEN` for `pnpm auth:google:apply` |
+
+## Branding API note (important)
+
+Branding **can** be created via API (`iap.googleapis.com` `projects.brands.create`) when the
+GCP project is under a Cloud **Organization**. Standalone / no-org projects return
+`Project must belong to an organization`.
+
+Even when the API works:
+
+- Only `applicationTitle` + `supportEmail` (not logo / privacy links)
+- Brand starts **Internal** — set External in Console for public Sign-In
+- Supabase still needs a **Web** OAuth client created in Auth Platform (IAP API clients cannot set Supabase redirect URIs)
+
+**Unblock options:** (1) move the GCP project into a Google Cloud Organization, then retry brand API; or (2) finish Branding + Web client in Console (pages opened by `pnpm console:open`).
 
 ## After user finishes Web client
 

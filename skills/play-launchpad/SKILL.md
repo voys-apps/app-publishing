@@ -4,10 +4,12 @@ description: >-
   Automate Google Play Console via Android Publisher API: service-account
   auth, store listings EN/TR, icons/feature graphics/screenshots, one-time
   products and subscriptions (monetization APIs), closed testing tracks with
-  Google Groups, and local AAB release drafts. Use when the user mentions Play
-  Console, Play Store listing, closed testing, Google Play IAP, Android
-  Publisher API, feature graphic upload, or wants to avoid manual Play forms /
-  Playwright for Play setup. Works in any Android/React Native/Expo repo.
+  Google Groups and Reddit tester-recruit handoffs (ask before create/post),
+  and local AAB release drafts. Use when the user mentions Play Console, Play
+  Store listing, closed testing, Google Play IAP, Android Publisher API,
+  feature graphic upload, tester Google Group, Reddit closed test post, or
+  wants to avoid manual Play forms / Playwright for Play setup. Works in any
+  Android/React Native/Expo repo.
 ---
 
 # Play Launchpad
@@ -39,7 +41,8 @@ against live Google docs when writing or changing client code.
 | Auth / list products / upsert IAP & subs | Android Publisher API + `scripts/play-console` |
 | Store listing text + contact details | `edits.listings` + `edits.details` |
 | Icon / feature graphic / screenshots | `edits.images` (upload media) |
-| Closed testing + Google Group | custom `CLOSED_TESTING` track + `edits.testers` |
+| Closed testing + Google Group | custom `CLOSED_TESTING` track + `edits.testers` — **ask first** |
+| Reddit closed-test recruit | Draft + ask; see [closed-testing.md](./closed-testing.md) |
 | Local AAB publish | `edits.bundles.upload` + `edits.tracks` |
 | Data Safety CSV | `applications.dataSafety` (only with verified answers) |
 | Visual mock / feature graphic art | `GenerateImage`, then resize to **1024×500** |
@@ -151,6 +154,10 @@ generic.
 2. **Closed testing:** do **not** assume track `beta` = closed. Create a custom
    track with `type: CLOSED_TESTING`, `formFactor: DEFAULT`. Assign testers via
    `googleGroups: ["group@googlegroups.com"]` (email lists unsupported by API).
+   **Ask the user before** creating a Google Group, assigning testers, running
+   `testing:create-closed` for real, or posting a Reddit recruit — see
+   [closed-testing.md](./closed-testing.md). Check tracks via API / `--dry-run` first,
+   then propose and wait for “yes”.
 3. **Draft apps:** first release on a never-published app may only allow
    `status: "draft"`. Promoting to `completed` fails with
    `Only releases with status draft may be created on draft app.` Tell the user
@@ -188,7 +195,8 @@ listings and report IDs + statuses.
 
 ## Additional resources
 
-- Hard API traps: [api-constraints.md](api-constraints.md)
-- Scaffold checklist: [scaffold.md](scaffold.md)
-- Example flows: [examples.md](examples.md)
+- Hard API traps: [api-constraints.md](./api-constraints.md)
+- Scaffold checklist: [scaffold.md](./scaffold.md)
+- Example flows: [examples.md](./examples.md)
+- Closed testing + Reddit (ask first): [closed-testing.md](./closed-testing.md)
 - Click handoffs: [../firebase-launchpad/handoffs.md](../firebase-launchpad/handoffs.md)

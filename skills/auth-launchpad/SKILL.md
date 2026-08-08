@@ -33,10 +33,11 @@ Docs (prefer live):
 
 | Step | Automatable? | How |
 | --- | --- | --- |
-| Enable GCP APIs (people, etc.) | Yes (Owner SA) | Service Usage |
-| **OAuth branding** (name, logo, support email) | **No** | Agent **opens** Branding URL; **user** fills + Save (+ Verify later) |
-| **Create OAuth Web client** + secret | **No** (IAP OAuth Admin API deprecated) | Agent opens Clients → Create; user creates Web app + redirect URIs |
-| Android / iOS OAuth clients | Mostly Console | Open create form; user adds package / SHA-1 / bundle |
+| Enable GCP APIs (IAP, etc.) | Yes (Owner SA) | Service Usage |
+| **OAuth brand** (app title + support email) | **Yes if** GCP project is in an **Organization** | `POST iap.googleapis.com/…/brands` — see api-constraints |
+| Brand on **no-org** project | **No** via API | `400 Project must belong to an organization` → Console or move project into a Cloud Org |
+| Logo / privacy URLs / External / Verify | **No** | Auth Platform Branding (agent opens; user clicks) |
+| **Create OAuth Web client** + redirect for Supabase | **No** via IAP clients API (IAP-locked) | Auth Platform Clients → Web application |
 | Enable Google on Supabase | **Yes** with token | `PATCH …/config/auth` + client id/secret |
 | Redirect URLs on Supabase | Yes with token / or Dashboard | Site URL + `quickdoc://auth/oauth-callback` |
 | Paste secrets into Supabase without token | No | Open Providers; user pastes |
