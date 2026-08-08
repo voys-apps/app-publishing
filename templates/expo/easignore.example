@@ -1,0 +1,63 @@
+# EAS archive ignore (local + cloud pack).
+# If this file is missing, EAS falls back to .gitignore — which excludes .env*
+# and breaks local builds that need .env.local in the pack.
+#
+# Rule: do NOT list .env / .env.local / .env.* here.
+# Still exclude SA JSON and **/secrets/** (not app runtime env).
+
+# Dependencies
+node_modules/
+
+# Expo / Metro
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native builds (prebuild / EAS regenerates)
+ios/
+android/
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+*.orig.*
+
+# Secrets / keys (env files intentionally NOT listed)
+*.pem
+**/secrets/**
+!**/secrets/README.md
+*service-account*.json
+*-firebase-adminsdk-*.json
+google-play-api*.json
+client_secret*.json
+scripts/admob/secrets/*.json
+!scripts/admob/secrets/README.md
+
+# Debug / logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+pnpm-debug.*
+*.log
+
+# OS / IDE
+.DS_Store
+*.swp
+.idea/
+.vscode/
+*.xcuserstate
+
+# TypeScript
+*.tsbuildinfo
+
+# Testing / coverage
+coverage/
+
+# Local dumps / temp / artifacts
+*.sql.bak
+.tmp/
+temp/
+*.aab
+*.apk
+eas-update-manifest.json

@@ -41,7 +41,7 @@ against live Google docs when writing or changing client code.
 | Auth / list products / upsert IAP & subs | Android Publisher API + `scripts/play-console` |
 | Store listing text + contact details | `edits.listings` + `edits.details` |
 | Icon / feature graphic / screenshots | `edits.images` (upload media) |
-| Local AAB publish | `edits.bundles.upload` + `edits.tracks` — prefer [local-android-ci.md](./local-android-ci.md) |
+| Local AAB publish | **Local first** — `pnpm build:android` + `testing:upload-aab`; never cloud unless asked — [local-android-ci.md](./local-android-ci.md) |
 | Closed testing + Google Group | custom `CLOSED_TESTING` track + `edits.testers` — **ask first** |
 | Data Safety CSV | `applications.dataSafety` (only with verified answers) |
 | Visual mock / feature graphic art | `GenerateImage`, then resize to **1024×500** |
@@ -80,7 +80,7 @@ Task Progress:
 - [ ] 4. Catalog: one-time products / subscriptions from project catalog
 - [ ] 5. Listing text (limits) + details (email / website)
 - [ ] 6. Assets: icon 512×512, feature graphic 1024×500, phone screenshots
-- [ ] 7. Closed testing: **local** `pnpm build:android` + `testing:upload-aab` (see local-android-ci.md) — or reuse existing bundle via `testing:create-closed`
+- [ ] 7. Closed testing: **local only** `pnpm build:android` + `testing:upload-aab` (see local-android-ci.md). Ensure `.easignore` exists and does **not** ignore `.env*`. Never use cloud build unless user asks. Or reuse bundle via `testing:create-closed`
 - [ ] 8. Report what API cannot do (draft-app first-launch blockers)
 ```
 

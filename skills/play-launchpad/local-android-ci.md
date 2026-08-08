@@ -1,56 +1,59 @@
-# Local Android CI/CD (no EAS Submit)
+# Local Android CI/CD (no EAS Submit, no cloud build)
 
-Prefer **local EAS build + Play Publisher API upload** over `eas submit`.
+**Local first, always.** Use `pnpm build:android` (`eas build … --local`).  
+**Never** fall back to `build:android:cloud` / EAS cloud unless the user explicitly asks for cloud.  
+If disk is full → free space and retry local. Do not “save the release” with cloud.
+
+Keep root app `package.json` scripts unchanged — use `scripts/play-console` only.
+
+## `.easignore` (required for local)
+
+EAS packs the project using **`.easignore` if present**, otherwise **`.gitignore`**.
+
+`.gitignore` usually excludes `.env` / `.env.*`. That breaks **local** builds that rely on
+`.env.local` (AdMob, Supabase, RC, etc.) being present in the pack.
+
+**Agent rule:** if the app repo has **no** `.easignore`, create one:
+
+1. Copy bulky / native / secret excludes from `.gitignore` (or a sensible default).
+2. **Do not** list `.env`, `.env.local`, or `.env.*` in `.easignore`.
+3. Still exclude SA JSON / `**/secrets/**` / `*service-account*.json` — those are not app runtime env.
+4. Tell the user briefly that `.easignore` was added so local builds keep env files.
+
+QuickDoc example lives at repo root `.easignore`.
 
 ## Flow
 
 ```bash
-# App repo root — needs Docker for eas --local
+# App repo — existing script (do not add new root scripts)
 pnpm build:android
-# → writes *.aab in project root (or path printed by eas)
+# → *.aab (path printed by eas; often project root)
 
-# Upload + closed track (Play SA Owner JSON)
-export GOOGLE_PLAY_SERVICE_ACCOUNT_JSON=./scripts/play-console/secrets/play-api-service-account.json
-export PLAY_CLOSED_TRACK=receezy-closed          # or app-specific track
+cd scripts/play-console
+export GOOGLE_PLAY_SERVICE_ACCOUNT_JSON=./secrets/play-api-service-account.json
+export PLAY_CLOSED_TRACK=receezy-closed
 export PLAY_CLOSED_GROUP=receezy@googlegroups.com
 
-pnpm --dir scripts/play-console testing:upload-aab -- \
-  --aab="$(ls -t ./*.aab | head -1)" \
+pnpm testing:upload-aab -- \
+  --aab="$(ls -t ../../*.aab | head -1)" \
   --track="$PLAY_CLOSED_TRACK" \
   --group="$PLAY_CLOSED_GROUP" \
   --status=completed
 ```
 
-Or one-shot (after `build:android` script exists):
-
-```bash
-pnpm release:android:local
-```
-
-## Scripts
+## Scripts (play-console only)
 
 | Script | Role |
 | --- | --- |
-| App `pnpm build:android` | `eas build -p android --profile production --local --non-interactive` |
-| `scripts/play-console` `testing:upload-aab` | `edits.bundles.upload` + testers + track release |
-| `testing:create-closed` | Re-point track to **latest already-uploaded** bundle (no new AAB) |
+| App `pnpm build:android` | Existing app script — do not fork in root |
+| `pnpm testing:upload-aab` | `edits.bundles.upload` + testers + track |
+| `pnpm testing:create-closed` | Latest already-uploaded bundle → track |
 
 ## Agent rules
 
-1. **Do not** use `eas submit` for this path unless the user asks.
-2. Ensure Docker is running before local EAS build.
-3. `versionCode` must be **greater** than any bundle already on Play (`edits.bundles.list`).
-   With `eas.json` `cli.appVersionSource: remote` + `production.autoIncrement`, EAS bumps remote;
-   confirm with `eas build:version:get -p android` if upload fails on version conflict.
-4. On upload/API failure: retry once; if draft-app blocker, open Console first-launch handoff.
-5. Creating Google Groups / Reddit posts still requires user **yes** — see [closed-testing.md](./closed-testing.md).
-
-## Verify
-
-```bash
-cd scripts/play-console
-pnpm auth:check
-# then list track (inline or dry-run helpers)
-```
-
-Report: track name, status, versionCode, googleGroups.
+1. **Do not** add `play:*` / `release:android:local` to the app root `package.json`.
+2. **Do not** use `eas submit` for this path unless the user asks.
+3. **Never** fall back to cloud. Local only; free disk and retry.
+4. Ensure `.easignore` exists and **does not** ignore `.env*`.
+5. `versionCode` must exceed Play’s max (`edits.bundles.list`).
+6. Google Group / Reddit still **ask first** — [closed-testing.md](./closed-testing.md).
