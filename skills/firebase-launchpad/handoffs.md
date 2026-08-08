@@ -44,6 +44,17 @@ Agent: print topic ID + open Monetization setup deep link when possible; user pa
 
 Agent: `open` app settings URL + `pbcopy` SA JSON when helpful; user pastes + Saves.
 
+## auth-launchpad (Google / Supabase)
+
+| # | Open URL | User action | Verify |
+| --- | --- | --- | --- |
+| 1 | Google Auth → Branding | App name, logo, support email, privacy/home | Visual consent screen |
+| 2 | Google Auth → Create Web client | Redirect `https://{ref}.supabase.co/auth/v1/callback` | Copy ID + secret |
+| 3 | Supabase → Auth → Providers | Enable Google + paste secrets (or `pnpm auth:google:apply`) | `pnpm auth:google:status` |
+| 4 | Supabase → URL Configuration | Add `{scheme}://auth/oauth-callback` | Device OAuth test |
+
+See [../auth-launchpad/handoffs.md](../auth-launchpad/handoffs.md).
+
 ## Shared rules
 
 1. Always list **what to click** in the chat (bullets), not only a bare URL  
