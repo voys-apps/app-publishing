@@ -4,17 +4,33 @@
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| `SERVICE_DISABLED` / API not used | Android Publisher API off | Enable `androidpublisher.googleapis.com` on the Cloud project tied to the SA |
-| `403` after API enabled | SA not invited in Play | Play Console → Users and permissions → invite `client_email` |
+| `SERVICE_DISABLED` / API not used | Android Publisher API off | Enable `androidpublisher.googleapis.com` on the Cloud project tied to the SA (Owner SA can enable via Service Usage) |
+| `403` Permission denied to get/enable service | SA is not GCP **Owner** (or missing Service Usage) | Grant **Owner** on `project_id` from the JSON; retry — agents then enable APIs / IAM themselves |
+| `403` after API enabled (Play calls) | SA not invited in Play | Play Console → Users and permissions → invite `client_email` |
 | Firebase SA works for Firebase only | Wrong product | Use Play-linked SA JSON |
+
+## GCP Owner (required for Voys toolkit)
+
+The Play SA JSON is not only a Play Publisher credential. **Require GCP project
+Owner** on that SA so agents can use the full permission set:
+
+- Enable Google APIs (`serviceusage.services.enable`)
+- Bind IAM roles (`pubsub.editor`, `monitoring.viewer`, etc.)
+- Create Pub/Sub topics + RTDN publisher grants (see **rc-forge**)
+
+Least-privilege / Play-only SAs are a footgun for this toolkit: automation stops
+mid-flow with opaque 403s. Document Owner as the default; if the user refuses
+Owner, they must run Cloud Console steps themselves — still prefer asking for
+Owner first.
 
 ## RevenueCat handoff (same SA JSON)
 
 The Play Publisher SA JSON is also what RevenueCat needs for the **Play Store app**
 connection. **RC API/MCP cannot upload it** — user must paste in RC dashboard
 (Service credentials). See **rc-forge** [`api-constraints.md`](../rc-forge/api-constraints.md)
-§ Play Store app connection. Do not block Play listing/IAP work on that step;
-do warn when the user later hits RC “Connection issue” / missing store credentials.
+§ Play Store app connection (incl. Owner + Pub/Sub). Do not block Play listing/IAP
+work on that step; do warn when the user later hits RC “Connection issue” /
+missing store credentials.
 
 ## Catalog model
 

@@ -112,6 +112,9 @@ Placeholders only: `com.example.yourapp`, `support@example.com`, `testers@google
 
 `secrets/.gitignore` ignores `*.json`; keep `secrets/README.md`.
 
+The SA must be **GCP project Owner** on `project_id` in the JSON so agents can
+enable APIs, bind IAM, and provision Pub/Sub (see play-launchpad / rc-forge).
+
 ### Money / listings
 
 - Prices as USD strings in catalog; convert with shared `usdToMicros` / Money proto helpers

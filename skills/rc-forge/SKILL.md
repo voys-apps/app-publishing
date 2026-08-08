@@ -82,7 +82,8 @@ Never commit secrets. Never put V2 secrets in `EXPO_PUBLIC_*`. SDK keys
 Task Progress:
 - [ ] 1. Stores: Play + ASC products exist (shared reverse-DNS ids when possible)
 - [ ] 2. RC apps exist — note app ids
-- [ ] 2b. Play app: user uploads SA JSON in RC dashboard (API cannot — see api-constraints)
+- [ ] 2b. Play SA is GCP project **Owner** (required for agents to enable APIs / Pub/Sub / IAM)
+- [ ] 2c. Play app: user uploads SA JSON in RC dashboard (API cannot — see api-constraints)
 - [ ] 3. Create/list products (`store_identifier` + type)
 - [ ] 4. Entitlement `pro` + attach subscription products
 - [ ] 5. Offering `default` + packages ($rc_monthly, $rc_annual, …)
@@ -92,9 +93,11 @@ Task Progress:
 - [ ] 9. App webhook: product → credits map
 ```
 
-### Play Store credentials (manual)
+### Play Store credentials (manual + Owner IAM)
 
-After `create-app` (`play_store` + `package_name`), **stop and hand off** for SA JSON:
+**Convention:** the Play Publisher SA JSON (`scripts/play-console/secrets/play-api-service-account.json`) must be a **GCP project Owner** on the Cloud project in that JSON (`project_id`). Agents then use **all** automatable permissions: Service Usage (enable APIs), IAM binds, Pub/Sub topic + RTDN publisher grant. A narrow Play-only SA gets `403` on those calls — do not invent workarounds; ask the user to grant **Owner**, then retry.
+
+After `create-app` (`play_store` + `package_name`), **stop and hand off** for SA JSON upload (API cannot):
 
 - Dashboard: Project → Play app → **Service credentials (Google Play)** → paste/upload JSON → Save  
 - Local file often at `scripts/play-console/secrets/play-api-service-account.json`  
@@ -210,6 +213,7 @@ PYTHONPATH=scripts/revenuecat-paywall python3 scripts/revenuecat-paywall/publish
 6. Custom PNGs → code path, not Paywall AI Editor  
 7. Prefer MCP for interactive catalog; templates for repeatable bootstraps  
 8. **Never pretend Play SA credentials were set via API** — dashboard upload only; open app settings + optional `pbcopy` of local JSON  
+9. **Play SA must be GCP project Owner** — agents assume Owner so they can enable APIs, set IAM, and provision Pub/Sub/RTDN; if not Owner, stop and ask the user to grant it  
 
 ## Additional resources
 

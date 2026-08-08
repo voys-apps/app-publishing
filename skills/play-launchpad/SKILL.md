@@ -72,7 +72,8 @@ Use `WebFetch` / `WebSearch` in the same turn you scaffold or edit API code.
 ```
 Task Progress:
 - [ ] 1. Locate packageName + Play service-account JSON (never commit)
-- [ ] 2. Enable Google Play Android Developer API + Play invite SA
+- [ ] 1b. Confirm SA is GCP project **Owner** (required — agents use full API/IAM/Pub/Sub powers)
+- [ ] 2. Enable Google Play Android Developer API + Play invite SA (automate via Owner SA when possible)
 - [ ] 3. auth:check (monetization.* + edits.insert — not legacy inappproducts)
 - [ ] 4. Catalog: one-time products / subscriptions from project catalog
 - [ ] 5. Listing text (limits) + details (email / website)
@@ -89,13 +90,21 @@ Task Progress:
 | `GOOGLE_APPLICATION_CREDENTIALS` | Fallback path |
 | `scripts/play-console/secrets/play-api-service-account.json` | Local convention (gitignored) |
 
+**GCP IAM (required):** the SA in that JSON must be **Owner** on its Cloud `project_id`.
+Agents assume Owner so they can enable APIs (`serviceusage`), manage IAM, and (with
+**rc-forge**) provision Pub/Sub for RevenueCat RTDN. On `403 Permission denied to
+get/enable service`, stop and ask the user to grant Owner — then retry with the
+same key and exercise full permissions. Do not treat least-privilege Play-only
+SAs as the default.
+
 **Team sharing:** 1Password / Bitwarden shared vault — **never** git, Slack, or Notion.
 
-**Enable (Cloud project linked to Play):**
+**Enable (Cloud project linked to Play) — prefer automation with Owner SA:**
 
 1. **Google Play Android Developer API** (`androidpublisher.googleapis.com`) — required
-2. Play Developer Reporting API — optional (vitals only)
+2. Play Developer Reporting API — optional (vitals only); CRM + IAM APIs when binding roles
 3. Play Console → Users and permissions → invite SA email with store / releases / monetization
+   (+ **View financial data** when the same JSON is uploaded to RevenueCat)
 
 Firebase `*-firebase-adminsdk-*.json` is **not** enough unless that same SA is invited in Play.
 

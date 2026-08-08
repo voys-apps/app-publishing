@@ -44,5 +44,13 @@ User opens a different Expo app without `scripts/play-console/`.
 
 1. Scaffold from [scaffold.md](scaffold.md).
 2. Copy catalog values from that app’s store docs / RevenueCat product IDs.
-3. Point SA JSON at that app’s Play-linked Cloud project.
-4. Run `auth:check` before any mutation.
+3. Point SA JSON at that app’s Play-linked Cloud project; confirm SA is **GCP Owner**.
+4. Run `auth:check` before any mutation. On Service Usage `403`, ask for Owner then retry.
+
+## Example F — Enable Pub/Sub for RevenueCat (Owner SA)
+
+User: “RC Pub/Sub hatası / RTDN”
+
+1. Confirm SA JSON is Owner on `project_id`.
+2. Run app helper (or Service Usage + IAM + topic create via SA).
+3. Hand Topic ID to user for Play Monetization setup paste (API cannot).

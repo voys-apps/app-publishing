@@ -10,11 +10,33 @@
 
 **Public API v2 / MCP cannot upload Google Play service-account credentials.**
 
+### GCP IAM: SA must be project Owner
+
+Voys convention: the **same** Play Publisher SA JSON used locally and in RC must be a
+**GCP project Owner** on `project_id` from that JSON.
+
+| Why Owner | What agents then automate |
+| --- | --- |
+| `serviceusage.services.enable` | Enable `pubsub`, `androidpublisher`, CRM, IAM APIs |
+| `resourcemanager` / IAM admin | Bind `pubsub.editor`, `monitoring.viewer` on the SA |
+| Pub/Sub admin | Create RTDN topic + grant Play’s publisher SA |
+
+**Do not** use a least-privilege Play-only SA for toolkit flows. Narrow roles →
+`403 Permission denied to get/enable service` (and similar). On 403:
+
+1. Tell the user to open Cloud Console → IAM → grant **Owner** to the SA `client_email`.
+2. Retry automation with the same JSON — agents should use **full** Owner capabilities
+   (APIs + IAM + Pub/Sub), not ask the user to click Enable for each API.
+
+Editor alone is sometimes enough for Service Usage, but **require Owner** so IAM
+binds and one-shot Pub/Sub setup never stall mid-flow.
+
 | What agents CAN do | What agents CANNOT do |
 | --- | --- |
 | `create-app` with `type: play_store` + `package_name` | Attach / replace SA JSON via REST or MCP |
 | Register products (`productId:basePlanId` / SKUs) | Fix dashboard “Connection issue” / “Missing credentials for the store” by API |
 | Attach products to packages / entitlements | |
+| With Owner SA: enable APIs, IAM, Pub/Sub topic (see below) | Paste RTDN topic into Play Monetization setup (Console-only) |
 
 When the user (or dashboard) shows **Connection issue** / **Make sure the Service Account Credentials JSON is configured properly** / store-state `Missing credentials for the store`:
 
@@ -22,6 +44,7 @@ When the user (or dashboard) shows **Connection issue** / **Make sure the Servic
 2. Upload or paste the same SA JSON used for Play Android Publisher (app repo convention: `scripts/play-console/secrets/play-api-service-account.json`).
 3. Save. Validator may take minutes–hours (RC docs: up to ~36h).
 4. Play Console → Users and permissions: SA email needs **View financial data** + manage orders/subscriptions (Publisher API access alone is not always enough for RC receipt validation).
+5. Confirm the SA is still **GCP Owner** on that Cloud project (required for RTDN/Pub/Sub automation).
 
 Do **not** invent alternate upload endpoints (`credentials_json`, multipart `/credentials`, etc.) — they 404 / 400 against API v2. Prefer opening the app settings URL and, if helpful, copying the local JSON to the clipboard (`pbcopy`) so the user only pastes + Saves.
 
@@ -31,12 +54,12 @@ RC dashboard error **"Google Cloud Pub/Sub API must first be enabled"** means th
 
 | Automatable? | How |
 | --- | --- |
-| **Yes**, if the SA (or user) is **project Owner/Editor** with `serviceusage.services.enable` | Service Usage API / `gcloud services enable pubsub.googleapis.com` |
-| **No**, with a narrow Play-only SA | `403 Permission denied to get/enable service` — ask user to grant Owner (or run as human Owner), then retry |
+| **Yes** — SA is **project Owner** (required) | Service Usage + IAM + Pub/Sub via SA JSON / `enable-rc-gcp-apis.sh` |
+| **No** — narrow Play-only SA | `403` → user grants Owner, then agent retries (do not hand-wave Enable links as the primary fix) |
 
 Also enable (RC checklist): `androidpublisher.googleapis.com`, `playdeveloperreporting.googleapis.com`, and often `cloudresourcemanager.googleapis.com` + `iam.googleapis.com` before IAM binds.
 
-**When SA is Owner, agents should automate GCP side via the SA JSON** (`scripts/play-console/secrets/play-api-service-account.json`):
+**Agents should automate GCP side via the Owner SA JSON** (`scripts/play-console/secrets/play-api-service-account.json`):
 
 1. Enable `pubsub.googleapis.com` (+ related APIs above).  
 2. Grant IAM on the SA: `roles/pubsub.editor` + `roles/monitoring.viewer`.  
@@ -46,7 +69,7 @@ Also enable (RC checklist): `androidpublisher.googleapis.com`, `playdeveloperrep
    (required so Play can publish RTDN).  
 5. Tell the user the **Topic ID** string to paste.
 
-App-repo helper: `scripts/play-console/enable-rc-gcp-apis.sh` (`gcloud` as Owner) — same outcome as the Node Service Usage flow.
+App-repo helper: `scripts/play-console/enable-rc-gcp-apis.sh` — expects Owner SA.
 
 ### What still needs humans (not RC/Play public APIs)
 

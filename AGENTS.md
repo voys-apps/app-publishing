@@ -13,6 +13,7 @@ This repository is a **toolkit of Cursor skills + copyable templates** for shipp
 - No real service-account JSON, RC `sk_` keys, or `.env` in commits  
 - Templates use `com.example.yourapp` placeholders only  
 - Play: monetization APIs, not legacy `inappproducts` when blocked  
+- Play SA JSON must be GCP project **Owner** so agents can enable APIs, IAM, and Pub/Sub/RTDN without mid-flow 403s — ask for Owner on permission denied, then use full powers  
 - RC: **rc-forge** (catalog via MCP/`templates/revenuecat` + Hosted UI Python)  
 - Play CLIs: Node ESM  
 - Prefer official vendor docs over memory when writing API clients  
