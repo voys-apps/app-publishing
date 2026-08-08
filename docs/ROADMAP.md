@@ -131,16 +131,17 @@ RevenueCat charts / Play vitals via API — optional skill, not day-one.
 ```text
 skills/
   play-launchpad/          # exists
+  rc-api/                  # exists — catalog API + MCP
   rc-paywall-code/         # exists
   release-checklist/       # next
   eas-ship/                # next
   asc-launchpad/           # iOS mirror
-  rc-catalog/              # RC products/offerings bootstrap
   store-assets/            # graphics pipeline
 
 templates/
   play-console/            # exists
-  revenuecat-paywall/      # optional Python stubs from rc-paywall-code
+  revenuecat/              # exists — list + bootstrap catalog
+  revenuecat-paywall/      # optional paywall stubs
   revenuecat-webhook/      # Deno stub for Supabase
   eas/                     # eas.json profile snippets + scripts notes
   pricing/                 # UNIT_ECONOMICS + product ID conventions
