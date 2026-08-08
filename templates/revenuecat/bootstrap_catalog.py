@@ -227,7 +227,7 @@ def main() -> None:
                         else:
                             raise
 
-    print("\nDone. Next: Hosted UI via rc-forge (publish only on explicit ask).")
+    print("\nDone. Next: Hosted UI via rc-launchpad (publish only on explicit ask).")
 
 
 if __name__ == "__main__":

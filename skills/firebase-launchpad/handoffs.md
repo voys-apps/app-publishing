@@ -34,7 +34,7 @@ pnpm analytics:status -- --open
 
 Agent: print topic ID + open Monetization setup deep link when possible; user pastes.
 
-## rc-forge (Dashboard-only)
+## rc-launchpad (Dashboard-only)
 
 | # | Open URL | User action | Verify |
 | --- | --- | --- | --- |

@@ -1,17 +1,19 @@
 ---
-name: rc-forge
+name: rc-launchpad
 description: >-
-  Forge RevenueCat end-to-end via REST API v2 and MCP: register products,
-  entitlements, offerings, packages; build Hosted UI paywalls as code (custom
-  PNGs, component trees, sticky footers, selected-state overrides, publish).
-  Use when the user mentions RevenueCat, RC catalog, offerings, entitlements,
-  packages, store SKU sync, Hosted UI paywall, paywall-as-code, rc-paywall-code,
-  rc-api, rc-forge, mockup-to-paywall, or API-first monetization. Prefer MCP for
-  interactive catalog; Python templates for bootstrap + paywall scripts. Pair
-  with play-launchpad for Play SKUs.
+  Launchpad for RevenueCat end-to-end via REST API v2 and MCP: register
+  products, entitlements, offerings, packages; build Hosted UI paywalls as code
+  (custom PNGs, component trees, sticky footers, selected-state overrides,
+  publish). Use when the user mentions RevenueCat, RC catalog, offerings,
+  entitlements, packages, store SKU sync, Hosted UI paywall, paywall-as-code,
+  rc-paywall-code, rc-api, rc-launchpad, rc-forge (legacy name),
+  mockup-to-paywall, or API-first monetization. Prefer MCP for interactive
+  catalog; Python templates for bootstrap + paywall scripts. Pair with
+  play-launchpad for Play SKUs.
+
 ---
 
-# RC Forge
+# RC Launchpad
 
 One skill for the full RevenueCat surface: **catalog** (products → entitlement →
 offerings → packages) and **Hosted UI paywalls** (media → component tree →
@@ -27,7 +29,7 @@ publish). Stores own the SKUs; RC registers and monetizes them.
 **Install:**
 
 ```bash
-npx skills add voys-apps/app-publishing --skill rc-forge
+npx skills add voys-apps/app-publishing --skill rc-launchpad
 # or full toolkit:
 npx skills add voys-apps/app-publishing -g
 ```

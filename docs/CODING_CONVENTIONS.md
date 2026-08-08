@@ -68,7 +68,7 @@ If live docs disagree with skill notes, **prefer live docs**, then patch the ski
 | Domain | Language | Why |
 | --- | --- | --- |
 | Google Play / ASC Node CLIs | **Node ESM (`.mjs`)** + `googleapis` / official clients | Matches existing `play-console` |
-| RevenueCat catalog + Hosted UI | **Python 3.9+** (`urllib` / stdlib first) | Matches `rc-forge` |
+| RevenueCat catalog + Hosted UI | **Python 3.9+** (`urllib` / stdlib first) | Matches `rc-launchpad` |
 | Interactive RC mutations in chat | **RevenueCat MCP** when connected | Prefer for one-off; scripts for repeatable |
 | Supabase webhook stubs | **Deno / TypeScript** | Matches app edge functions |
 | Skill docs | Markdown | — |
@@ -118,7 +118,7 @@ Do not document `npm run` / `npm install` for toolkit scripts.
 `secrets/.gitignore` ignores `*.json`; keep `secrets/README.md`.
 
 The SA must be **GCP project Owner** on `project_id` in the JSON so agents can
-enable APIs, bind IAM, and provision Pub/Sub (see play-launchpad / rc-forge).
+enable APIs, bind IAM, and provision Pub/Sub (see play-launchpad / rc-launchpad).
 
 ### Money / listings
 

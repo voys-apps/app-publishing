@@ -9,7 +9,7 @@ description: >-
   when the user mentions Firebase, FCM, google-services.json,
   GoogleService-Info.plist, Firebase Analytics, Expo push credentials, EAS
   FCM V1, or wants to avoid manual Firebase Console / eas credentials menus.
-  Pair with play-launchpad (shared Owner GCP) and rc-forge.
+  Pair with play-launchpad (shared Owner GCP) and rc-launchpad.
 ---
 
 # Firebase Launchpad
@@ -44,7 +44,7 @@ Official docs (prefer live over memory):
 | First-ever GA account (ToS) | **Agent opens Console URLs** (`pnpm console:open` / `open`); **user clicks** Enable — never Playwright-click ToS |
 | **Upload FCM V1 key to EAS** (Expo Push Android) | `pnpm eas:upload-fcm` (Expo GraphQL) — **not** interactive `eas credentials` |
 | Play listing / IAP | **play-launchpad** |
-| RC catalog / paywalls | **rc-forge** |
+| RC catalog / paywalls | **rc-launchpad** |
 | iOS APNs `.p8` for FCM | Agent opens Cloud Messaging URL; **user uploads** `.p8` |
 
 ## Credentials
@@ -97,7 +97,7 @@ API / SA **cannot** accept Google Analytics Terms of Service or upload APNs keys
 | Analytics Enable (preferred) | `…/project/{id}/settings/integrations` | Google Analytics → **Enable** / Link → accept ToS → create/select GA4 property |
 | Analytics Enable (alt) | `…/analytics/app/android:{package}/overview` | **Enable Google Analytics** if still shown |
 | iOS APNs | `…/project/{id}/settings/cloudmessaging` | Upload APNs Authentication Key (`.p8`) |
-| RC Play SA (via rc-forge) | RC Play app → Service credentials | Paste SA JSON → Save |
+| RC Play SA (via rc-launchpad) | RC Play app → Service credentials | Paste SA JSON → Save |
 | Play RTDN topic (via play-launchpad) | Play → Monetization setup | Paste Pub/Sub topic → Save → test |
 
 ```bash
@@ -155,7 +155,7 @@ Docs: https://docs.expo.dev/push-notifications/fcm-credentials/
 | iOS APNs `.p8` | **No** via Management API | Agent opens Cloud Messaging URL; user uploads `.p8` |
 | Expo Go / no native module | N/A | Dev client or store build for Analytics/FCM |
 | Restricted Android API key in google-services.json | Partial | Cloud Console API key restrictions / Play SHA-1 (see Expo FCM docs) |
-| Play Monetization RTDN topic paste | No | Play Console (rc-forge / play-launchpad) |
+| Play Monetization RTDN topic paste | No | Play Console (rc-launchpad / play-launchpad) |
 | RC Play SA JSON upload | No | RC dashboard only |
 
 Full traps: [api-constraints.md](api-constraints.md).

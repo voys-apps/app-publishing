@@ -21,7 +21,7 @@ This repo should stay **store + monetization + Firebase provision + release auto
 | Piece | Role |
 | --- | --- |
 | `play-launchpad` | Play listing, IAP/subs, assets, closed testing via API |
-| `rc-forge` | RevenueCat catalog + Hosted UI paywalls (API/MCP + Python) |
+| `rc-launchpad` | RevenueCat catalog + Hosted UI paywalls (API/MCP + Python) |
 | `firebase-launchpad` | Firebase addFirebase, Android/iOS apps, config download, Analytics handoff |
 | `auth-launchpad` | Google OAuth branding/clients (Console) + Supabase Google provider (Management API) |
 | `templates/play-console` | Copy-paste Node scripts for any package name |
@@ -59,7 +59,7 @@ Mirror Play for iOS: metadata EN/TR, screenshots sizes, IAP / subscription group
 
 ## Priority 2 — monetization glue (cross-app)
 
-### 5. `rc-catalog` → **shipped as `rc-forge` + `templates/revenuecat`**
+### 5. `rc-catalog` → **shipped as `rc-launchpad` + `templates/revenuecat`**
 
 Still to deepen:
 
@@ -134,7 +134,7 @@ RevenueCat charts / Play vitals via API — optional skill, not day-one.
 ```text
 skills/
   play-launchpad/          # exists
-  rc-forge/                # exists — catalog + Hosted UI
+  rc-launchpad/                # exists — catalog + Hosted UI
   firebase-launchpad/      # exists — Firebase apps + configs
   auth-launchpad/          # exists — Google/Supabase Auth
   release-checklist/       # next

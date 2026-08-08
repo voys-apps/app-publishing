@@ -9,7 +9,8 @@
     "subscriptions:upsert": "node ./src/upsert-subscriptions.mjs",
     "listing:upsert": "node ./src/upsert-store-listing.mjs",
     "listing:upload-assets": "node ./src/upload-store-assets.mjs",
-    "testing:create-closed": "node ./src/create-closed-test.mjs"
+    "testing:create-closed": "node ./src/create-closed-test.mjs",
+    "testing:upload-aab": "node ./src/upload-aab-closed.mjs"
   },
   "dependencies": {
     "googleapis": "^164.1.0"

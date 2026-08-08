@@ -41,9 +41,8 @@ against live Google docs when writing or changing client code.
 | Auth / list products / upsert IAP & subs | Android Publisher API + `scripts/play-console` |
 | Store listing text + contact details | `edits.listings` + `edits.details` |
 | Icon / feature graphic / screenshots | `edits.images` (upload media) |
+| Local AAB publish | `edits.bundles.upload` + `edits.tracks` — prefer [local-android-ci.md](./local-android-ci.md) |
 | Closed testing + Google Group | custom `CLOSED_TESTING` track + `edits.testers` — **ask first** |
-| Reddit closed-test recruit | Draft + ask; see [closed-testing.md](./closed-testing.md) |
-| Local AAB publish | `edits.bundles.upload` + `edits.tracks` |
 | Data Safety CSV | `applications.dataSafety` (only with verified answers) |
 | Visual mock / feature graphic art | `GenerateImage`, then resize to **1024×500** |
 
@@ -81,7 +80,7 @@ Task Progress:
 - [ ] 4. Catalog: one-time products / subscriptions from project catalog
 - [ ] 5. Listing text (limits) + details (email / website)
 - [ ] 6. Assets: icon 512×512, feature graphic 1024×500, phone screenshots
-- [ ] 7. Closed testing: create CLOSED_TESTING track + Google Group + draft/completed release
+- [ ] 7. Closed testing: **local** `pnpm build:android` + `testing:upload-aab` (see local-android-ci.md) — or reuse existing bundle via `testing:create-closed`
 - [ ] 8. Report what API cannot do (draft-app first-launch blockers)
 ```
 
@@ -95,7 +94,7 @@ Task Progress:
 
 **GCP IAM (required):** the SA in that JSON must be **Owner** on its Cloud `project_id`.
 Agents assume Owner so they can enable APIs (`serviceusage`), manage IAM, and (with
-**rc-forge**) provision Pub/Sub for RevenueCat RTDN. On `403 Permission denied to
+**rc-launchpad**) provision Pub/Sub for RevenueCat RTDN. On `403 Permission denied to
 get/enable service`, stop and ask the user to grant Owner — then retry with the
 same key and exercise full permissions. Do not treat least-privilege Play-only
 SAs as the default.
@@ -127,6 +126,7 @@ scripts/play-console/
     upsert-store-listing.mjs
     upload-store-assets.mjs
     create-closed-test.mjs
+    upload-aab-closed.mjs   # local AAB → closed track
 ```
 
 Scaffold with [scaffold.md](scaffold.md) when missing. Keep **project-specific**
@@ -142,7 +142,8 @@ generic.
   "subscriptions:upsert": "node ./src/upsert-subscriptions.mjs",
   "listing:upsert": "node ./src/upsert-store-listing.mjs",
   "listing:upload-assets": "node ./src/upload-store-assets.mjs",
-  "testing:create-closed": "node ./src/create-closed-test.mjs"
+  "testing:create-closed": "node ./src/create-closed-test.mjs",
+  "testing:upload-aab": "node ./src/upload-aab-closed.mjs"
 }
 ```
 
@@ -182,7 +183,11 @@ pnpm products:upsert-credits
 pnpm listing:upsert
 pnpm listing:upload-assets
 pnpm testing:create-closed
+pnpm testing:upload-aab -- --aab=./app.aab --track=receezy-closed --status=completed
 ```
+
+Local Android CI (build on machine, upload via API — **not** `eas submit`):
+[local-android-ci.md](./local-android-ci.md).
 
 ### Human click handoffs
 
@@ -199,4 +204,5 @@ listings and report IDs + statuses.
 - Scaffold checklist: [scaffold.md](./scaffold.md)
 - Example flows: [examples.md](./examples.md)
 - Closed testing + Reddit (ask first): [closed-testing.md](./closed-testing.md)
+- Local Android build + AAB upload: [local-android-ci.md](./local-android-ci.md)
 - Click handoffs: [../firebase-launchpad/handoffs.md](../firebase-launchpad/handoffs.md)

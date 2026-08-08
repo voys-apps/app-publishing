@@ -19,7 +19,7 @@ Single skills:
 
 ```bash
 npx skills add voys-apps/app-publishing --skill play-launchpad
-npx skills add voys-apps/app-publishing --skill rc-forge
+npx skills add voys-apps/app-publishing --skill rc-launchpad
 ```
 
 Badge:
@@ -31,7 +31,7 @@ Badge:
 ```text
 skills/
 ├── play-launchpad/       # Google Play Android Publisher API
-└── rc-forge/             # RevenueCat catalog + Hosted UI paywalls
+└── rc-launchpad/             # RevenueCat catalog + Hosted UI paywalls
 
 templates/
 ├── play-console/         # Node + googleapis
@@ -46,7 +46,7 @@ docs/
 | Skill | Use when |
 | --- | --- |
 | **play-launchpad** | Play listing, IAP/subs, assets, closed testing |
-| **rc-forge** | RC products/offerings/entitlements + custom PNG Hosted UI → publish on ask |
+| **rc-launchpad** | RC products/offerings/entitlements + custom PNG Hosted UI → publish on ask |
 
 ## Templates
 
@@ -74,7 +74,7 @@ Never commit service-account JSON or RC `sk_` keys.
 - Google Play Android Developer API + SA invited in Play Console
 - Node 18+ + `googleapis`
 
-### rc-forge
+### rc-launchpad
 
 | Variable | Required | Purpose |
 | --- | --- | --- |

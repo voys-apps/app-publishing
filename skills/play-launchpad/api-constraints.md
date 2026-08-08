@@ -16,7 +16,7 @@ Owner** on that SA so agents can use the full permission set:
 
 - Enable Google APIs (`serviceusage.services.enable`)
 - Bind IAM roles (`pubsub.editor`, `monitoring.viewer`, etc.)
-- Create Pub/Sub topics + RTDN publisher grants (see **rc-forge**)
+- Create Pub/Sub topics + RTDN publisher grants (see **rc-launchpad**)
 
 Least-privilege / Play-only SAs are a footgun for this toolkit: automation stops
 mid-flow with opaque 403s. Document Owner as the default; if the user refuses
@@ -27,7 +27,7 @@ Owner first.
 
 The Play Publisher SA JSON is also what RevenueCat needs for the **Play Store app**
 connection. **RC API/MCP cannot upload it** — user must paste in RC dashboard
-(Service credentials). See **rc-forge** [`api-constraints.md`](../rc-forge/api-constraints.md)
+(Service credentials). See **rc-launchpad** [`api-constraints.md`](../rc-launchpad/api-constraints.md)
 § Play Store app connection (incl. Owner + Pub/Sub). Do not block Play listing/IAP
 work on that step; do warn when the user later hits RC “Connection issue” /
 missing store credentials.
