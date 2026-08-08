@@ -1,10 +1,10 @@
 # App Publishing
 
-All-in-one Cursor / Claude Code / Codex skills for **shipping mobile apps**:
+All-in-one Cursor / Claude Code / Codex skills for **shipping Voys-style mobile apps**:
 Google Play Console automation + RevenueCat Hosted UI paywalls as code.
 
-Grow this repo over time (App Store Connect, Data Safety helpers, AAB upload
-pipelines, store asset generators, …).
+Assumes Expo + Supabase + RevenueCat + EAS (see [docs/STACK.md](docs/STACK.md)).
+Grow over time: App Store Connect, release checklists, RC catalog, webhooks, store assets.
 
 ## Install
 
@@ -32,17 +32,15 @@ Badge:
 ```text
 skills/
 ├── play-launchpad/       # Google Play Android Publisher API
-│   ├── SKILL.md
-│   ├── api-constraints.md
-│   ├── scaffold.md
-│   └── examples.md
 └── rc-paywall-code/      # RevenueCat Hosted UI paywalls as code
-    ├── SKILL.md
-    ├── python-patterns.md
-    └── api-constraints.md
 
 templates/
-└── play-console/         # Reusable Node + googleapis scripts (copy into app repos)
+└── play-console/         # Reusable Node + googleapis scripts
+
+docs/
+├── STACK.md              # Assumed Voys app shape
+├── ROADMAP.md            # What to add next (prioritized)
+└── CODING_CONVENTIONS.md # How to write skills & templates
 ```
 
 | Skill | Use when |
@@ -84,13 +82,26 @@ Never commit service-account JSON. Share keys via 1Password / Bitwarden.
 
 Python 3.9+ (+ Pillow for image work). See skill docs for publish flow.
 
-## Roadmap (future skills / templates)
+## What we’ll add next
 
-- [ ] App Store Connect listing + IAP helpers
-- [ ] Play Data Safety CSV builder (from verified app inventory)
-- [ ] AAB upload + track promote CLI
-- [ ] Store screenshot / feature-graphic generators
-- [ ] Unified “release checklist” skill across stores
+Prioritized for apps like QuickDoc / FitCheck / Smart Receipt (Expo + RC + Supabase):
+
+1. **release-checklist** — week-1 ship walkthrough  
+2. **eas-ship** — EAS local/cloud + submit conventions  
+3. Play **AAB upload / track promote**  
+4. **asc-launchpad** — App Store Connect mirror  
+5. **rc-catalog** + **webhook contract** stubs  
+6. Data Safety / store asset generators  
+
+Full detail: [docs/ROADMAP.md](docs/ROADMAP.md).
+
+## Contributing / coding style
+
+When adding skills or templates, follow [docs/CODING_CONVENTIONS.md](docs/CODING_CONVENTIONS.md)
+(language split: Play → Node ESM, RC paywalls → Python, webhooks → Deno;
+placeholder catalogs only; API docs before client code).
+
+Agents: see [AGENTS.md](AGENTS.md).
 
 ## Related
 
