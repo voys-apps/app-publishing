@@ -1,7 +1,7 @@
 # App Publishing
 
 All-in-one Cursor / Claude Code / Codex skills for **shipping Voys-style mobile apps**:
-Google Play Console automation + RevenueCat **API** (catalog + Hosted UI paywalls).
+Google Play Console automation + RevenueCat forge (catalog + Hosted UI).
 
 Assumes Expo + Supabase + RevenueCat + EAS (see [docs/STACK.md](docs/STACK.md)).
 
@@ -19,8 +19,7 @@ Single skills:
 
 ```bash
 npx skills add voys-apps/app-publishing --skill play-launchpad
-npx skills add voys-apps/app-publishing --skill rc-api
-npx skills add voys-apps/app-publishing --skill rc-paywall-code
+npx skills add voys-apps/app-publishing --skill rc-forge
 ```
 
 Badge:
@@ -32,8 +31,7 @@ Badge:
 ```text
 skills/
 ├── play-launchpad/       # Google Play Android Publisher API
-├── rc-api/               # RC products, entitlements, offerings, packages (API + MCP)
-└── rc-paywall-code/      # Hosted UI paywalls as code
+└── rc-forge/             # RevenueCat catalog + Hosted UI paywalls
 
 templates/
 ├── play-console/         # Node + googleapis
@@ -48,8 +46,7 @@ docs/
 | Skill | Use when |
 | --- | --- |
 | **play-launchpad** | Play listing, IAP/subs, assets, closed testing |
-| **rc-api** | Bootstrap/list RC catalog via REST or MCP; wire `pro` + `default`/`credits` |
-| **rc-paywall-code** | Custom PNG Hosted UI → PATCH draft → publish on ask |
+| **rc-forge** | RC products/offerings/entitlements + custom PNG Hosted UI → publish on ask |
 
 ## Templates
 
@@ -77,7 +74,7 @@ Never commit service-account JSON or RC `sk_` keys.
 - Google Play Android Developer API + SA invited in Play Console
 - Node 18+ + `googleapis`
 
-### rc-api / rc-paywall-code
+### rc-forge
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
@@ -98,7 +95,7 @@ See [docs/ROADMAP.md](docs/ROADMAP.md): release-checklist, eas-ship, ASC, webhoo
 
 ## Related
 
-Legacy RC-only: [voys-apps/rc-paywall-code](https://github.com/voys-apps/rc-paywall-code)
+Legacy RC paywall-only: [voys-apps/rc-paywall-code](https://github.com/voys-apps/rc-paywall-code)
 
 ## License
 

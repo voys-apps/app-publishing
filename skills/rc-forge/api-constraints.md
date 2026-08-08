@@ -1,4 +1,4 @@
-# RevenueCat API constraints
+# RevenueCat API constraints (catalog + shared)
 
 ## Auth
 
@@ -25,12 +25,13 @@
 - Current offering is controlled in dashboard / targeting — creating `default` does not automatically make it current; verify after bootstrap
 - Multiple offerings (`default`, `credits`) are normal for Voys apps
 
-## Paywalls
+## Paywalls (summary)
 
 - Draft PATCH requires current `revision`
 - After publish, draft may be empty — next edit uses published revision
-- Paywall AI Editor ignores custom PNG placement — use paywall-as-code for branded art
+- Paywall AI Editor ignores custom PNG placement — use paywall-as-code
 - Never publish without explicit user approval
+- Component / lid traps: see [paywall-constraints.md](paywall-constraints.md)
 
 ## Webhooks
 

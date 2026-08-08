@@ -20,8 +20,7 @@ This repo should stay **store + monetization + release automation**. App feature
 | Piece | Role |
 | --- | --- |
 | `play-launchpad` | Play listing, IAP/subs, assets, closed testing via API |
-| `rc-api` | RevenueCat catalog API (products, entitlements, offerings, packages) + MCP map |
-| `rc-paywall-code` | Hosted UI paywalls as code (Python + REST v2) |
+| `rc-forge` | RevenueCat catalog + Hosted UI paywalls (API/MCP + Python) |
 | `templates/play-console` | Copy-paste Node scripts for any package name |
 | `templates/revenuecat` | Python list/bootstrap catalog via API v2 |
 
@@ -56,7 +55,7 @@ Mirror Play for iOS: metadata EN/TR, screenshots sizes, IAP / subscription group
 
 ## Priority 2 — monetization glue (cross-app)
 
-### 5. `rc-catalog` → **shipped as `rc-api` + `templates/revenuecat`**
+### 5. `rc-catalog` → **shipped as `rc-forge` + `templates/revenuecat`**
 
 Still to deepen:
 
@@ -131,8 +130,7 @@ RevenueCat charts / Play vitals via API — optional skill, not day-one.
 ```text
 skills/
   play-launchpad/          # exists
-  rc-api/                  # exists — catalog API + MCP
-  rc-paywall-code/         # exists
+  rc-forge/                # exists — catalog + Hosted UI
   release-checklist/       # next
   eas-ship/                # next
   asc-launchpad/           # iOS mirror

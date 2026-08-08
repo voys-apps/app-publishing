@@ -1,7 +1,7 @@
 # RevenueCat API templates
 
 Python scripts for **API v2** catalog bootstrap (products, entitlements, offerings,
-packages). Hosted UI paywalls: see skill **rc-paywall-code** /
+packages). Hosted UI paywalls: skill **rc-forge** /
 `scripts/revenuecat-paywall/` in the app.
 
 ## Setup
@@ -20,7 +20,6 @@ python3 bootstrap_catalog.py
 Create Play / App Store products **before** bootstrap. Play subscriptions use
 `productId:basePlanId`.
 
-## Skills
+## Skill
 
-- `rc-api` — catalog + MCP/REST workflow  
-- `rc-paywall-code` — paywall component trees + publish  
+- `rc-forge` — catalog + Hosted UI paywalls (MCP/REST + Python)

@@ -35,7 +35,8 @@ mutating interactively.
 | `list_catalog.py` | Print apps, products, entitlements, offerings |
 | `bootstrap_catalog.py` | Create missing products / entitlement / offerings / packages (`--dry-run`) |
 
-Paywall UI scripts stay in `scripts/revenuecat-paywall/` (see **rc-paywall-code**).
+Paywall UI scripts stay in `scripts/revenuecat-paywall/` (see **rc-forge**
+python-patterns / paywall-constraints).
 
 ## `catalog.py` shape
 
@@ -98,7 +99,7 @@ OFFERINGS = [
 3. Ensure entitlement `pro`; attach subscription product ids  
 4. Ensure offerings; create packages; attach iOS+Android products to each package  
 5. Print ids for paywall / webhook wiring  
-6. Stop before paywall publish unless user asks → hand off to **rc-paywall-code**
+6. Stop before paywall publish unless user asks → continue with **rc-forge** paywall scripts
 
 ## Idempotency
 
@@ -112,4 +113,4 @@ OFFERINGS = [
 | --- | --- |
 | Exploring one project in chat | MCP list/create/attach |
 | New app repo needs repeatable setup | Copy `templates/revenuecat` + edit `catalog.py` |
-| Pixel paywall from PNGs | `rc-paywall-code` Python |
+| Pixel paywall from PNGs | **rc-forge** Python paywall modules |

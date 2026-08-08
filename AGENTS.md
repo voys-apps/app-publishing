@@ -13,7 +13,7 @@ This repository is a **toolkit of Cursor skills + copyable templates** for shipp
 - No real service-account JSON, RC `sk_` keys, or `.env` in commits  
 - Templates use `com.example.yourapp` placeholders only  
 - Play: monetization APIs, not legacy `inappproducts` when blocked  
-- RC catalog: **rc-api** (MCP or `templates/revenuecat`); paywalls: **rc-paywall-code** (Python)  
+- RC: **rc-forge** (catalog via MCP/`templates/revenuecat` + Hosted UI Python)  
 - Play CLIs: Node ESM  
 - Prefer official vendor docs over memory when writing API clients  
 
