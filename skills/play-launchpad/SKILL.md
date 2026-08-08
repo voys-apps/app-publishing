@@ -44,7 +44,7 @@ against live Google docs when writing or changing client code.
 | Local AAB publish | **Local first** — `pnpm build:android` + `testing:upload-aab`; never cloud unless asked — [local-android-ci.md](./local-android-ci.md) |
 | Closed testing + Google Group | custom `CLOSED_TESTING` track + `edits.testers` — **ask first** |
 | Data Safety CSV | `applications.dataSafety` (only with verified answers) |
-| Visual mock / feature graphic art | `GenerateImage`, then resize to **1024×500** |
+| Visual mock / feature graphic / screenshots | [`store-assets`](../store-assets/SKILL.md) (`GenerateImage` + resize) → then this skill’s upload |
 
 **Do not** use Playwright to fill Play Console forms when the API covers the task.
 

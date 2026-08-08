@@ -4,26 +4,27 @@ description: >-
   Launchpad for RevenueCat end-to-end via REST API v2 and MCP: register
   products, entitlements, offerings, packages; build Hosted UI paywalls as code
   (custom PNGs, component trees, sticky footers, selected-state overrides,
-  publish). Use when the user mentions RevenueCat, RC catalog, offerings,
-  entitlements, packages, store SKU sync, Hosted UI paywall, paywall-as-code,
-  rc-paywall-code, rc-api, rc-launchpad, rc-forge (legacy name),
-  mockup-to-paywall, or API-first monetization. Prefer MCP for interactive
-  catalog; Python templates for bootstrap + paywall scripts. Pair with
-  play-launchpad for Play SKUs.
-
+  publish); Play RTDN (Pub/Sub) plus Supabase credits/entitlement webhooks
+  (credits-bridge). Use when the user mentions RevenueCat, RC catalog,
+  offerings, entitlements, packages, store SKU sync, Hosted UI paywall,
+  paywall-as-code, rc-paywall-code, rc-api, rc-launchpad, rc-forge (legacy name),
+  mockup-to-paywall, RTDN, revenuecat-webhook, credits grant, or API-first
+  monetization. Prefer MCP for interactive catalog; Python templates for
+  bootstrap + paywall scripts. Pair with play-launchpad for Play SKUs.
 ---
 
 # RC Launchpad
 
 One skill for the full RevenueCat surface: **catalog** (products → entitlement →
-offerings → packages) and **Hosted UI paywalls** (media → component tree →
-publish). Stores own the SKUs; RC registers and monetizes them.
+offerings → packages), **Hosted UI paywalls** (media → component tree →
+publish), and **credits bridge** (Play RTDN + RC → Supabase webhook).
 
 | Layer | Where |
 | --- | --- |
 | Play / ASC store products | [`play-launchpad`](../play-launchpad/SKILL.md) |
-| RC catalog + paywalls | **this skill** |
+| RC catalog + paywalls + webhook/RTDN | **this skill** |
 | Catalog scripts | `templates/revenuecat/` |
+| Webhook stub | `templates/revenuecat-webhook/` + [credits-bridge.md](credits-bridge.md) |
 | Paywall scripts | `scripts/revenuecat-paywall/` in the app (scaffold from [python-patterns.md](python-patterns.md)) |
 
 **Install:**
@@ -46,6 +47,7 @@ Legacy paywall-only repo (optional): `npx skills add voys-apps/rc-paywall-code`
 | One-shot AI paywall mock (no custom art) | MCP `create-paywall-ai` only if user agrees |
 | Publish / unpublish paywall | Explicit user ask → REST or MCP |
 | Visual check | MCP `render-paywall-screenshot` or dashboard builder |
+| Play RTDN / Pub/Sub + Supabase credits / `pro` sync | [credits-bridge.md](credits-bridge.md) + Edge Function |
 
 Do **not** invent store products inside RC — create them in Play/ASC first (or
 test store), then register `store_identifier`.
@@ -56,9 +58,11 @@ Before writing or changing client code:
 
 1. https://www.revenuecat.com/docs/api-v2  
 2. Tags: App, Product, Entitlement, Offering, Package, Paywall, Media  
-3. Confirm paths, auth (`Bearer` V2 `sk_…`), body fields  
-4. Apply [api-constraints.md](api-constraints.md), [catalog-patterns.md](catalog-patterns.md),  
-   [paywall-constraints.md](paywall-constraints.md), [python-patterns.md](python-patterns.md)
+3. Webhooks: https://www.revenuecat.com/docs/integrations/webhooks  
+4. Confirm paths, auth (`Bearer` V2 `sk_…`), body fields  
+5. Apply [api-constraints.md](api-constraints.md), [catalog-patterns.md](catalog-patterns.md),  
+   [paywall-constraints.md](paywall-constraints.md), [python-patterns.md](python-patterns.md),  
+   [credits-bridge.md](credits-bridge.md)
 
 If docs disagree with this skill, **prefer live docs**, then patch the skill.
 
@@ -72,6 +76,7 @@ If docs disagree with this skill, **prefer live docs**, then patch the skill.
 | `RC_APP_ID_IOS` / `RC_APP_ID_ANDROID` | product create | `app…` |
 | `RC_PAYWALL_ID` | paywall work | `pw…` |
 | `RC_ENV_FILE` | no | dotenv path |
+| `REVENUECAT_WEBHOOK_SECRET` | webhook | Edge Function + RC Integrations header |
 
 Never commit secrets. Never put V2 secrets in `EXPO_PUBLIC_*`. SDK keys
 (`appl_` / `goog_`) are client-safe and separate.
@@ -92,7 +97,7 @@ Task Progress:
 - [ ] 6. Offering `credits` + consumable packages (optional)
 - [ ] 7. Attach iOS + Android products to each package
 - [ ] 8. Paywall (Part B) — publish only on ask
-- [ ] 9. App webhook: product → credits map
+- [ ] 9. Credits bridge (Part C) — RTDN + webhook + product → credits map
 ```
 
 ### Play Store credentials (manual + Owner IAM)
@@ -214,6 +219,22 @@ PYTHONPATH=scripts/revenuecat-paywall python3 scripts/revenuecat-paywall/publish
 
 ---
 
+## Part C — Credits bridge (RTDN + webhook)
+
+Wire store notifications into RC, then RC events into Supabase credits / `pro`.
+
+Full contract: **[credits-bridge.md](credits-bridge.md)**.
+
+```bash
+# New app:
+cp -R templates/revenuecat-webhook your-app/supabase/functions/revenuecat-webhook
+# Edit CREDIT_PRODUCTS + deploy; set REVENUECAT_WEBHOOK_SECRET
+```
+
+Do **not** split this into a separate skill — keep monetization glue here.
+
+---
+
 ## Hard rules
 
 1. Store products before RC registration (except test store)  
@@ -225,6 +246,7 @@ PYTHONPATH=scripts/revenuecat-paywall python3 scripts/revenuecat-paywall/publish
 7. Prefer MCP for interactive catalog; templates for repeatable bootstraps  
 8. **Never pretend Play SA credentials were set via API** — open app settings + optional `pbcopy`; **user** pastes + Saves (see [../firebase-launchpad/handoffs.md](../firebase-launchpad/handoffs.md))  
 9. **Play SA must be GCP project Owner** — agents assume Owner so they can enable APIs, set IAM, and provision Pub/Sub/RTDN; if not Owner, stop and ask the user to grant it  
+10. Webhook grants must be **idempotent**; credit map lives in app constants  
 
 ## Additional resources
 
@@ -232,3 +254,4 @@ PYTHONPATH=scripts/revenuecat-paywall python3 scripts/revenuecat-paywall/publish
 - [catalog-patterns.md](catalog-patterns.md) — REST paths + bootstrap shape  
 - [paywall-constraints.md](paywall-constraints.md) — 400/422 paywall traps  
 - [python-patterns.md](python-patterns.md) — paywall script recipes  
+- [credits-bridge.md](credits-bridge.md) — RTDN + Supabase webhook / credits  
