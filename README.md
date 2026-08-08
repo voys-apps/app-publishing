@@ -1,7 +1,8 @@
 # App Publishing
 
-All-in-one Cursor / Claude Code / Codex skills for **shipping Voys-style mobile apps**:
-Google Play Console automation + RevenueCat forge (catalog + Hosted UI).
+All-in-one Cursor skills for **shipping Voys-style mobile apps**:
+Play Console, RevenueCat (catalog + paywalls + credits bridge), Firebase, Auth,
+AdMob, and store asset generation.
 
 Assumes Expo + Supabase + RevenueCat + EAS (see [docs/STACK.md](docs/STACK.md)).
 
@@ -12,7 +13,7 @@ Assumes Expo + Supabase + RevenueCat + EAS (see [docs/STACK.md](docs/STACK.md)).
 npx skills add voys-apps/app-publishing -g
 
 # or project-scoped (recommended per app repo)
-npx skills add voys-apps/app-publishing --all
+npx skills add voys-apps/app-publishing --agent cursor -y
 ```
 
 Single skills:
@@ -20,6 +21,7 @@ Single skills:
 ```bash
 npx skills add voys-apps/app-publishing --skill play-launchpad
 npx skills add voys-apps/app-publishing --skill rc-launchpad
+npx skills add voys-apps/app-publishing --skill store-assets
 ```
 
 Badge:
@@ -30,23 +32,30 @@ Badge:
 
 ```text
 skills/
-├── play-launchpad/       # Google Play Android Publisher API
-└── rc-launchpad/             # RevenueCat catalog + Hosted UI paywalls
+├── play-launchpad/       # Play API + local Android CI
+├── rc-launchpad/         # Catalog + Hosted UI + credits-bridge (RTDN/webhook)
+├── store-assets/         # Icon / feature graphic / screenshot generation
+├── firebase-launchpad/
+├── auth-launchpad/
+└── admob-launchpad/
 
 templates/
-├── play-console/         # Node + googleapis
-└── revenuecat/           # Python catalog list + bootstrap
-
-docs/
-├── STACK.md
-├── ROADMAP.md
-└── CODING_CONVENTIONS.md
+├── play-console/
+├── revenuecat/
+├── revenuecat-webhook/   # Deno stub
+├── expo/easignore.example
+├── firebase/
+└── auth-supabase/
 ```
 
 | Skill | Use when |
 | --- | --- |
-| **play-launchpad** | Play listing, IAP/subs, assets, closed testing |
-| **rc-launchpad** | RC products/offerings/entitlements + custom PNG Hosted UI → publish on ask |
+| **play-launchpad** | Play listing, IAP/subs, closed testing, local AAB upload |
+| **rc-launchpad** | RC catalog + paywalls + RTDN/Supabase credits webhook |
+| **store-assets** | Generate/resize 512 icon, 1024×500 feature, screenshots |
+| **firebase-launchpad** | Firebase apps, configs, FCM → EAS |
+| **auth-launchpad** | Google Sign-In Console + Supabase provider |
+| **admob-launchpad** | Console handoff → `ca-app-pub` → EAS env |
 
 ## Templates
 
@@ -65,14 +74,22 @@ python3 scripts/revenuecat/list_catalog.py
 python3 scripts/revenuecat/bootstrap_catalog.py --dry-run
 ```
 
+### RevenueCat → Supabase webhook stub
+
+```bash
+cp -R templates/revenuecat-webhook your-app/supabase/functions/revenuecat-webhook
+# see skills/rc-launchpad/credits-bridge.md
+```
+
 Never commit service-account JSON or RC `sk_` keys.
 
 ## Requirements
 
 ### play-launchpad
 
-- Google Play Android Developer API + SA invited in Play Console
+- Google Play Android Developer API + SA invited in Play Console (prefer GCP **Owner**)
 - Node 18+ + `googleapis`
+- Local builds: `pnpm build:android` — never cloud unless asked; `.easignore` must not ignore `.env*`
 
 ### rc-launchpad
 
@@ -82,21 +99,14 @@ Never commit service-account JSON or RC `sk_` keys.
 | `RC_KEY_FILE` | alt* | File containing the secret |
 | `RC_PROJECT_ID` | yes | `proj...` |
 | `RC_PAYWALL_ID` | paywall | `pw...` |
+| `REVENUECAT_WEBHOOK_SECRET` | webhook | Edge Function auth |
 
 Python 3.9+ (+ Pillow for paywall image work).
 
-## What we’ll add next
+## What’s next (TODO)
 
-See [docs/ROADMAP.md](docs/ROADMAP.md): release-checklist, eas-ship, ASC, webhook contract, assets.
-
-## Contributing
-
-[docs/CODING_CONVENTIONS.md](docs/CODING_CONVENTIONS.md) · [AGENTS.md](AGENTS.md)
-
-## Related
-
-Legacy RC paywall-only: [voys-apps/rc-paywall-code](https://github.com/voys-apps/rc-paywall-code)
+See [docs/ROADMAP.md](docs/ROADMAP.md): `eas-ship`, `asc-launchpad`, `release-checklist`, Data Safety, privacy URLs.
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
