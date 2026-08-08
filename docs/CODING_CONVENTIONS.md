@@ -97,6 +97,11 @@ src/<action>.mjs         # one CLI entry per concern
 
 Placeholders only: `com.example.yourapp`, `support@example.com`, `testers@googlegroups.com`.
 
+### Package manager
+
+Use **pnpm** in all skill docs and template READMEs (`pnpm install`, `pnpm <script>`).
+Do not document `npm run` / `npm install` for toolkit scripts.
+
 ### CLI UX
 
 - Support `--dry-run` for mutating commands when practical

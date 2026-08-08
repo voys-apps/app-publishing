@@ -28,6 +28,15 @@ Agents working from **app-publishing** skills should assume target apps look lik
 - Play closed testing via custom `CLOSED_TESTING` track + Google Group
 - First publish of a **draft** Play app may require Console first-launch / Start rollout — API cannot always `completed`
 
+## Firebase / analytics / push
+
+- Firebase often on the **same GCP** as Play (`addFirebase`) or a separate Owner SA
+- Client configs: `config/firebase/google-services.json` + `GoogleService-Info.plist`
+- Provision via **firebase-launchpad** / `scripts/firebase` (Management API)
+- First Google Analytics link needs Console ToS / Integrations Enable
+- iOS push: APNs key upload in Firebase Console (not Management API)
+- RNFirebase + modular `services/analytics` in the app — needs native build (not Expo Go)
+
 ## Branding / legal
 
 - Support & legal pages under `https://voysapps.io/<app>/…`

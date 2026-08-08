@@ -5,9 +5,9 @@
 User: “Play’de closed test aç, grup X, son AAB”
 
 1. Confirm `PACKAGE_NAME` and SA path.
-2. `npm run auth:check`
+2. `pnpm auth:check`
 3. Ensure listing + icon exist (draft apps still need minimum store presence).
-4. `npm run testing:create-closed -- --track=qa-closed --group=x@googlegroups.com`
+4. `pnpm testing:create-closed -- --track=qa-closed --group=x@googlegroups.com`
 5. If commit fails with draft-app error → leave release as `draft`, tell user
    Console → Closed testing → Start rollout after first-launch checklist.
 
@@ -16,7 +16,7 @@ User: “Play’de closed test aç, grup X, son AAB”
 User: “5 kredi paketini Play’e ekle”
 
 1. Fill `catalog.mjs` SKUs/prices/copy from product docs (or ask once for table).
-2. `npm run products:upsert-credits`
+2. `pnpm products:upsert-credits`
 3. Activate DRAFT purchase options via `batchUpdateStates`.
 4. List products; report ACTIVE skus.
 
@@ -27,7 +27,7 @@ User: “TR isim şu olsun, screenshot bunları, feature graphic üret”
 1. Update `listing-catalog.mjs` titles (≤30) + short (≤80).
 2. `GenerateImage` for marketing banner → crop/resample to **1024×500**.
 3. Stage screenshots under `assets/play-store/`.
-4. `npm run listing:upsert` then `npm run listing:upload-assets`.
+4. `pnpm listing:upsert` then `pnpm listing:upload-assets`.
 5. Verify image counts via `edits.images.list`.
 
 ## Example D — Wrong tool

@@ -10,8 +10,9 @@ Target stack (our apps look like this):
 | Android | Google Play + Android Publisher API, EAS local/cloud AAB |
 | iOS | App Store Connect + EAS submit |
 | Secrets | SA JSON / API keys in `secrets/` or 1Password — never git |
+| Firebase | Management API for apps + configs; Analytics ToS / APNs may need Console |
 
-This repo should stay **store + monetization + release automation**. App feature code (chat UI, receipts, etc.) stays in each app repo.
+This repo should stay **store + monetization + Firebase provision + release automation**. App feature code (chat UI, receipts, etc.) stays in each app repo.
 
 ---
 
@@ -21,8 +22,10 @@ This repo should stay **store + monetization + release automation**. App feature
 | --- | --- |
 | `play-launchpad` | Play listing, IAP/subs, assets, closed testing via API |
 | `rc-forge` | RevenueCat catalog + Hosted UI paywalls (API/MCP + Python) |
+| `firebase-launchpad` | Firebase addFirebase, Android/iOS apps, config download, Analytics handoff |
 | `templates/play-console` | Copy-paste Node scripts for any package name |
 | `templates/revenuecat` | Python list/bootstrap catalog via API v2 |
+| `templates/firebase` | Node provision + config download + analytics status |
 
 ---
 
@@ -131,6 +134,7 @@ RevenueCat charts / Play vitals via API — optional skill, not day-one.
 skills/
   play-launchpad/          # exists
   rc-forge/                # exists — catalog + Hosted UI
+  firebase-launchpad/      # exists — Firebase apps + configs
   release-checklist/       # next
   eas-ship/                # next
   asc-launchpad/           # iOS mirror
@@ -139,6 +143,7 @@ skills/
 templates/
   play-console/            # exists
   revenuecat/              # exists — list + bootstrap catalog
+  firebase/                # exists — provision + download configs
   revenuecat-paywall/      # optional paywall stubs
   revenuecat-webhook/      # Deno stub for Supabase
   eas/                     # eas.json profile snippets + scripts notes

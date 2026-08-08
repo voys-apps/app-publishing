@@ -130,7 +130,7 @@ Scaffold with [scaffold.md](scaffold.md) when missing. Keep **project-specific**
 IDs/prices/copy in `catalog.mjs` / `listing-catalog.mjs` only — skill logic stays
 generic.
 
-### Suggested npm scripts
+### Suggested pnpm scripts
 
 ```json
 {
@@ -166,14 +166,22 @@ generic.
 
 ## Quick commands
 
+Use **pnpm** (not npm):
+
 ```bash
-cd scripts/play-console && npm install
-npm run auth:check
-npm run products:upsert-credits
-npm run listing:upsert
-npm run listing:upload-assets
-npm run testing:create-closed
+cd scripts/play-console && pnpm install
+pnpm auth:check
+pnpm products:upsert-credits
+pnpm listing:upsert
+pnpm listing:upload-assets
+pnpm testing:create-closed
 ```
+
+### Human click handoffs
+
+Console-only steps (RTDN topic paste, SA invite, first-publish Start rollout):
+**agent opens URL + prints clicks; user acts** — shared table in
+[firebase-launchpad/handoffs.md](../firebase-launchpad/handoffs.md).
 
 Pass `--dry-run` where supported. After mutations, re-list tracks / products /
 listings and report IDs + statuses.
@@ -183,3 +191,4 @@ listings and report IDs + statuses.
 - Hard API traps: [api-constraints.md](api-constraints.md)
 - Scaffold checklist: [scaffold.md](scaffold.md)
 - Example flows: [examples.md](examples.md)
+- Click handoffs: [../firebase-launchpad/handoffs.md](../firebase-launchpad/handoffs.md)

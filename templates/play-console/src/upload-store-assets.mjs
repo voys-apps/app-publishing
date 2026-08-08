@@ -2,8 +2,8 @@
  * Upload Play Store icon, feature graphic, and phone screenshots, then commit.
  *
  * Usage:
- *   npm run listing:upload-assets
- *   npm run listing:upload-assets -- --dry-run
+ *   pnpm listing:upload-assets
+ *   pnpm listing:upload-assets -- --dry-run
  *
  * Edit paths in assets-catalog.mjs
  */

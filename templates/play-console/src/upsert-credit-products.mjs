@@ -2,9 +2,9 @@
  * Upsert credit one-time products via monetization.onetimeproducts (new catalog).
  *
  * Usage:
- *   npm run products:upsert-credits
- *   npm run products:upsert-credits -- --dry-run
- *   npm run products:upsert-credits -- --only=25k,50k
+ *   pnpm products:upsert-credits
+ *   pnpm products:upsert-credits -- --dry-run
+ *   pnpm products:upsert-credits -- --only=25k,50k
  */
 import { CREDIT_PRODUCTS, PACKAGE_NAME } from './catalog.mjs'
 import { formatApiError, getAndroidPublisher } from './client.mjs'

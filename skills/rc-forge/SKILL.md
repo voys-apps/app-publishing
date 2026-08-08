@@ -99,6 +99,15 @@ Task Progress:
 
 After `create-app` (`play_store` + `package_name`), **stop and hand off** for SA JSON upload (API cannot):
 
+**Agent opens / prepares; user clicks:**
+
+1. `open` RevenueCat Play app settings (Service credentials)  
+2. Optionally `pbcopy < scripts/play-console/secrets/play-api-service-account.json`  
+3. User: paste/upload JSON → **Save**  
+4. Verify later with store-state / MCP — never claim upload succeeded without confirmation  
+
+Same pattern for RTDN topic paste in Play Monetization setup (see firebase-launchpad [handoffs.md](../firebase-launchpad/handoffs.md)).
+
 - Dashboard: Project → Play app → **Service credentials (Google Play)** → paste/upload JSON → Save  
 - Local file often at `scripts/play-console/secrets/play-api-service-account.json`  
 - Errors like “Connection issue” / “Service Account Credentials JSON” / store-state **Missing credentials for the store** mean this step is incomplete — **not** a product-ID bug  
@@ -212,7 +221,7 @@ PYTHONPATH=scripts/revenuecat-paywall python3 scripts/revenuecat-paywall/publish
 5. No V2 secrets in git or `EXPO_PUBLIC_*`  
 6. Custom PNGs → code path, not Paywall AI Editor  
 7. Prefer MCP for interactive catalog; templates for repeatable bootstraps  
-8. **Never pretend Play SA credentials were set via API** — dashboard upload only; open app settings + optional `pbcopy` of local JSON  
+8. **Never pretend Play SA credentials were set via API** — open app settings + optional `pbcopy`; **user** pastes + Saves (see [../firebase-launchpad/handoffs.md](../firebase-launchpad/handoffs.md))  
 9. **Play SA must be GCP project Owner** — agents assume Owner so they can enable APIs, set IAM, and provision Pub/Sub/RTDN; if not Owner, stop and ask the user to grant it  
 
 ## Additional resources

@@ -2,8 +2,8 @@
  * Upsert Pro subscriptions via monetization API.
  *
  * Usage:
- *   npm run subscriptions:upsert
- *   npm run subscriptions:upsert -- --dry-run
+ *   pnpm subscriptions:upsert
+ *   pnpm subscriptions:upsert -- --dry-run
  */
 import { PACKAGE_NAME, SUBSCRIPTIONS } from './catalog.mjs'
 import { formatApiError, getAndroidPublisher } from './client.mjs'

@@ -8,7 +8,7 @@ Node + `googleapis` helpers for Google Play Android Publisher API.
 # from an app repo
 cp -R <path-to-app-publishing>/templates/play-console scripts/play-console
 cd scripts/play-console
-npm install
+pnpm install
 ```
 
 1. Edit `src/catalog.mjs`, `src/listing-catalog.mjs`, `src/assets-catalog.mjs`
@@ -16,12 +16,12 @@ npm install
 3. Invite the SA in Play Console; enable **Google Play Android Developer API**
 
 ```bash
-npm run auth:check
-npm run products:upsert-credits
-npm run subscriptions:upsert
-npm run listing:upsert
-npm run listing:upload-assets
-npm run testing:create-closed -- --track=my-closed --group=testers@googlegroups.com
+pnpm auth:check
+pnpm products:upsert-credits
+pnpm subscriptions:upsert
+pnpm listing:upsert
+pnpm listing:upload-assets
+pnpm testing:create-closed -- --track=my-closed --group=testers@googlegroups.com
 ```
 
 Pass `--dry-run` where supported.

@@ -2,8 +2,8 @@
  * Upsert Play Store listing (EN + TR) + app contact details, then commit edit.
  *
  * Usage:
- *   npm run listing:upsert
- *   npm run listing:upsert -- --dry-run
+ *   pnpm listing:upsert
+ *   pnpm listing:upsert -- --dry-run
  *
  * Note: Screenshots / feature graphic are NOT uploaded here — add assets under
  * assets/play-store/ then use listing:upload-images (future) or Console.

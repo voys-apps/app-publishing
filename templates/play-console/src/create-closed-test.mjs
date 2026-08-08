@@ -3,8 +3,8 @@
  * grant access to a Google Group.
  *
  * Usage:
- *   npm run testing:create-closed
- *   npm run testing:create-closed -- --dry-run
+ *   pnpm testing:create-closed
+ *   pnpm testing:create-closed -- --dry-run
  */
 import { PACKAGE_NAME } from './listing-catalog.mjs'
 import { formatApiError, getAndroidPublisher } from './client.mjs'

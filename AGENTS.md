@@ -14,8 +14,10 @@ This repository is a **toolkit of Cursor skills + copyable templates** for shipp
 - Templates use `com.example.yourapp` placeholders only  
 - Play: monetization APIs, not legacy `inappproducts` when blocked  
 - Play SA JSON must be GCP project **Owner** so agents can enable APIs, IAM, and Pub/Sub/RTDN without mid-flow 403s — ask for Owner on permission denied, then use full powers  
+- Firebase: **firebase-launchpad** (Management API apps + configs; Analytics ToS / APNs Console handoff)  
 - RC: **rc-forge** (catalog via MCP/`templates/revenuecat` + Hosted UI Python)  
-- Play CLIs: Node ESM  
+- Play CLIs: Node ESM; invoke with **pnpm** (`pnpm install`, `pnpm <script>`) — not npm  
+- Console-only steps: **agent opens URL + prints clicks; user clicks** — see firebase-launchpad [handoffs.md](skills/firebase-launchpad/handoffs.md)  
 - Prefer official vendor docs over memory when writing API clients  
 
 ## Install reminder for skill bodies

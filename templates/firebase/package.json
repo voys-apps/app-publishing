@@ -1,0 +1,16 @@
+{
+  "name": "firebase-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "auth:check": "node ./src/auth-check.mjs",
+    "provision": "node ./src/provision.mjs",
+    "configs:download": "node ./src/download-configs.mjs",
+    "analytics:status": "node ./src/analytics-status.mjs",
+    "console:open": "node ./src/open-console-handoffs.mjs",
+    "eas:upload-fcm": "node ./src/upload-eas-fcm.mjs"
+  },
+  "dependencies": {
+    "googleapis": "^164.0.0"
+  }
+}
