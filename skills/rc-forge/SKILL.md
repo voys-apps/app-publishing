@@ -82,6 +82,7 @@ Never commit secrets. Never put V2 secrets in `EXPO_PUBLIC_*`. SDK keys
 Task Progress:
 - [ ] 1. Stores: Play + ASC products exist (shared reverse-DNS ids when possible)
 - [ ] 2. RC apps exist — note app ids
+- [ ] 2b. Play app: user uploads SA JSON in RC dashboard (API cannot — see api-constraints)
 - [ ] 3. Create/list products (`store_identifier` + type)
 - [ ] 4. Entitlement `pro` + attach subscription products
 - [ ] 5. Offering `default` + packages ($rc_monthly, $rc_annual, …)
@@ -90,6 +91,16 @@ Task Progress:
 - [ ] 8. Paywall (Part B) — publish only on ask
 - [ ] 9. App webhook: product → credits map
 ```
+
+### Play Store credentials (manual)
+
+After `create-app` (`play_store` + `package_name`), **stop and hand off** for SA JSON:
+
+- Dashboard: Project → Play app → **Service credentials (Google Play)** → paste/upload JSON → Save  
+- Local file often at `scripts/play-console/secrets/play-api-service-account.json`  
+- Errors like “Connection issue” / “Service Account Credentials JSON” / store-state **Missing credentials for the store** mean this step is incomplete — **not** a product-ID bug  
+
+Details: [api-constraints.md](api-constraints.md) § Play Store app connection.
 
 ### Play `store_identifier`
 
@@ -198,6 +209,7 @@ PYTHONPATH=scripts/revenuecat-paywall python3 scripts/revenuecat-paywall/publish
 5. No V2 secrets in git or `EXPO_PUBLIC_*`  
 6. Custom PNGs → code path, not Paywall AI Editor  
 7. Prefer MCP for interactive catalog; templates for repeatable bootstraps  
+8. **Never pretend Play SA credentials were set via API** — dashboard upload only; open app settings + optional `pbcopy` of local JSON  
 
 ## Additional resources
 

@@ -8,6 +8,14 @@
 | `403` after API enabled | SA not invited in Play | Play Console → Users and permissions → invite `client_email` |
 | Firebase SA works for Firebase only | Wrong product | Use Play-linked SA JSON |
 
+## RevenueCat handoff (same SA JSON)
+
+The Play Publisher SA JSON is also what RevenueCat needs for the **Play Store app**
+connection. **RC API/MCP cannot upload it** — user must paste in RC dashboard
+(Service credentials). See **rc-forge** [`api-constraints.md`](../rc-forge/api-constraints.md)
+§ Play Store app connection. Do not block Play listing/IAP work on that step;
+do warn when the user later hits RC “Connection issue” / missing store credentials.
+
 ## Catalog model
 
 | Approach | When |
