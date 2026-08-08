@@ -1,10 +1,9 @@
 # App Publishing
 
 All-in-one Cursor / Claude Code / Codex skills for **shipping Voys-style mobile apps**:
-Google Play Console automation + RevenueCat Hosted UI paywalls as code.
+Google Play Console automation + RevenueCat **API** (catalog + Hosted UI paywalls).
 
 Assumes Expo + Supabase + RevenueCat + EAS (see [docs/STACK.md](docs/STACK.md)).
-Grow over time: App Store Connect, release checklists, RC catalog, webhooks, store assets.
 
 ## Install
 
@@ -12,14 +11,15 @@ Grow over time: App Store Connect, release checklists, RC catalog, webhooks, sto
 # global (all Cursor projects)
 npx skills add voys-apps/app-publishing -g
 
-# or project-scoped
-npx skills add voys-apps/app-publishing
+# or project-scoped (recommended per app repo)
+npx skills add voys-apps/app-publishing --all
 ```
 
-Install a single skill:
+Single skills:
 
 ```bash
 npx skills add voys-apps/app-publishing --skill play-launchpad
+npx skills add voys-apps/app-publishing --skill rc-api
 npx skills add voys-apps/app-publishing --skill rc-paywall-code
 ```
 
@@ -32,81 +32,73 @@ Badge:
 ```text
 skills/
 ├── play-launchpad/       # Google Play Android Publisher API
-└── rc-paywall-code/      # RevenueCat Hosted UI paywalls as code
+├── rc-api/               # RC products, entitlements, offerings, packages (API + MCP)
+└── rc-paywall-code/      # Hosted UI paywalls as code
 
 templates/
-└── play-console/         # Reusable Node + googleapis scripts
+├── play-console/         # Node + googleapis
+└── revenuecat/           # Python catalog list + bootstrap
 
 docs/
-├── STACK.md              # Assumed Voys app shape
-├── ROADMAP.md            # What to add next (prioritized)
-└── CODING_CONVENTIONS.md # How to write skills & templates
+├── STACK.md
+├── ROADMAP.md
+└── CODING_CONVENTIONS.md
 ```
 
 | Skill | Use when |
 | --- | --- |
-| **play-launchpad** | Play listing, IAP/subscriptions via monetization API, feature graphic / screenshots, closed testing + Google Groups, local AAB drafts |
-| **rc-paywall-code** | RevenueCat Hosted UI paywalls from custom PNGs via REST API v2 (Python) |
+| **play-launchpad** | Play listing, IAP/subs, assets, closed testing |
+| **rc-api** | Bootstrap/list RC catalog via REST or MCP; wire `pro` + `default`/`credits` |
+| **rc-paywall-code** | Custom PNG Hosted UI → PATCH draft → publish on ask |
 
-## Play Console template
+## Templates
 
-Copy into an app repo:
+### Play Console
 
 ```bash
 cp -R templates/play-console your-app/scripts/play-console
-cd your-app/scripts/play-console
-npm install
-# put SA JSON at secrets/play-api-service-account.json (gitignored)
-# edit src/catalog.mjs + src/listing-catalog.mjs for your package
-npm run auth:check
 ```
 
-Never commit service-account JSON. Share keys via 1Password / Bitwarden.
+### RevenueCat catalog
+
+```bash
+cp -R templates/revenuecat your-app/scripts/revenuecat
+export RC_API_KEY=sk_... RC_PROJECT_ID=proj...
+python3 scripts/revenuecat/list_catalog.py
+python3 scripts/revenuecat/bootstrap_catalog.py --dry-run
+```
+
+Never commit service-account JSON or RC `sk_` keys.
 
 ## Requirements
 
 ### play-launchpad
 
-- Google Cloud project with **Google Play Android Developer API** enabled
-- Service account invited in Play Console (store / releases / monetization)
+- Google Play Android Developer API + SA invited in Play Console
 - Node 18+ + `googleapis`
 
-### rc-paywall-code
+### rc-api / rc-paywall-code
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `RC_API_KEY` | yes* | V2 secret (`sk_...`) |
 | `RC_KEY_FILE` | alt* | File containing the secret |
 | `RC_PROJECT_ID` | yes | `proj...` |
-| `RC_PAYWALL_ID` | yes | `pw...` |
+| `RC_PAYWALL_ID` | paywall | `pw...` |
 
-Python 3.9+ (+ Pillow for image work). See skill docs for publish flow.
+Python 3.9+ (+ Pillow for paywall image work).
 
 ## What we’ll add next
 
-Prioritized for apps like QuickDoc / FitCheck / Smart Receipt (Expo + RC + Supabase):
+See [docs/ROADMAP.md](docs/ROADMAP.md): release-checklist, eas-ship, ASC, webhook contract, assets.
 
-1. **release-checklist** — week-1 ship walkthrough  
-2. **eas-ship** — EAS local/cloud + submit conventions  
-3. Play **AAB upload / track promote**  
-4. **asc-launchpad** — App Store Connect mirror  
-5. **rc-catalog** + **webhook contract** stubs  
-6. Data Safety / store asset generators  
+## Contributing
 
-Full detail: [docs/ROADMAP.md](docs/ROADMAP.md).
-
-## Contributing / coding style
-
-When adding skills or templates, follow [docs/CODING_CONVENTIONS.md](docs/CODING_CONVENTIONS.md)
-(language split: Play → Node ESM, RC paywalls → Python, webhooks → Deno;
-placeholder catalogs only; API docs before client code).
-
-Agents: see [AGENTS.md](AGENTS.md).
+[docs/CODING_CONVENTIONS.md](docs/CODING_CONVENTIONS.md) · [AGENTS.md](AGENTS.md)
 
 ## Related
 
-Standalone RC-only repo (legacy / single-skill install):
-[voys-apps/rc-paywall-code](https://github.com/voys-apps/rc-paywall-code)
+Legacy RC-only: [voys-apps/rc-paywall-code](https://github.com/voys-apps/rc-paywall-code)
 
 ## License
 

@@ -20,8 +20,10 @@ This repo should stay **store + monetization + release automation**. App feature
 | Piece | Role |
 | --- | --- |
 | `play-launchpad` | Play listing, IAP/subs, assets, closed testing via API |
+| `rc-api` | RevenueCat catalog API (products, entitlements, offerings, packages) + MCP map |
 | `rc-paywall-code` | Hosted UI paywalls as code (Python + REST v2) |
 | `templates/play-console` | Copy-paste Node scripts for any package name |
+| `templates/revenuecat` | Python list/bootstrap catalog via API v2 |
 
 ---
 
@@ -54,16 +56,13 @@ Mirror Play for iOS: metadata EN/TR, screenshots sizes, IAP / subscription group
 
 ## Priority 2 — monetization glue (cross-app)
 
-### 5. `rc-catalog` (skill + template)
+### 5. `rc-catalog` → **shipped as `rc-api` + `templates/revenuecat`**
 
-Bootstrap RevenueCat for a new app:
+Still to deepen:
 
-- Products / packages / offerings (`default`, `credits`)
-- Entitlement marker (`pro`)
-- Align store product IDs with Play + ASC + app `PRODUCT_IDS`
-- Virtual currency / credit mapping notes for webhook
-
-Prefer RevenueCat MCP + REST; keep scripts Python or small Node consistent with existing skills.
+- Virtual currency helpers
+- Targeting / current offering automation
+- Shared YAML catalog consumed by Play + RC templates
 
 ### 6. `rc-webhook-contract` (skill / docs)
 

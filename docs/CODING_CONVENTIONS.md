@@ -68,11 +68,12 @@ If live docs disagree with skill notes, **prefer live docs**, then patch the ski
 | Domain | Language | Why |
 | --- | --- | --- |
 | Google Play / ASC Node CLIs | **Node ESM (`.mjs`)** + `googleapis` / official clients | Matches existing `play-console` |
-| RevenueCat Hosted UI paywalls | **Python 3.9+** | Matches `rc-paywall-code` |
+| RevenueCat catalog + Hosted UI | **Python 3.9+** (`urllib` / stdlib first) | Matches `rc-api` + `rc-paywall-code` |
+| Interactive RC mutations in chat | **RevenueCat MCP** when connected | Prefer for one-off; scripts for repeatable |
 | Supabase webhook stubs | **Deno / TypeScript** | Matches app edge functions |
 | Skill docs | Markdown | — |
 
-Do not scaffold Node for RC paywall work unless the user explicitly asks. Do not scaffold Python for Play Console unless asked.
+Do not scaffold Node for RC work unless the user explicitly asks. Do not scaffold Python for Play Console unless asked.
 
 ---
 

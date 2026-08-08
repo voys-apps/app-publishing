@@ -19,11 +19,16 @@ already has PNGs — it generates its own art and cannot place existing files.
 
 ```bash
 npx skills add voys-apps/app-publishing --skill rc-paywall-code
+# catalog (products/offerings) first if missing:
+npx skills add voys-apps/app-publishing --skill rc-api
 # or full toolkit (Play + RC):
 npx skills add voys-apps/app-publishing -g
 ```
 
 Legacy single-skill repo: `npx skills add voys-apps/rc-paywall-code`
+
+**Prerequisite:** products / entitlement / offering should exist — use
+[`rc-api`](../rc-api/SKILL.md) + `templates/revenuecat/` (or MCP) before building UI.
 
 Use this skill in **any** project. If the repo already has scripts under
 `scripts/revenuecat-paywall/` (or similar), prefer those; otherwise scaffold the
@@ -34,9 +39,10 @@ the user explicitly asks.
 
 | Need | Tool |
 | --- | --- |
-| Upload images, PATCH draft, save revision | REST API v2 + Python scripts |
+| Register products / offerings / packages | **rc-api** + MCP or `templates/revenuecat` |
+| Upload images, PATCH draft, save revision | REST API v2 + Python scripts (this skill) |
 | Publish / unpublish draft | REST `…/paywalls/{id}/actions/publish` via `publish_paywall.py` |
-| List offerings / products | RevenueCat MCP when available (optional) |
+| List offerings / products | RevenueCat MCP or `list_catalog.py` |
 | Visual check after a draft save | MCP `render-paywall-screenshot` (optional) or dashboard builder |
 | Fine pixel layout from custom art | Code + REST (this skill) |
 
