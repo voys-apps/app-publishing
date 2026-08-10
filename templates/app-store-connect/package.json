@@ -1,0 +1,13 @@
+{
+  "name": "app-store-connect-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "auth:check": "node ./src/auth-check.mjs",
+    "app:resolve": "node ./src/resolve-app.mjs",
+    "metadata:upsert": "node ./src/upsert-version-localizations.mjs"
+  },
+  "dependencies": {
+    "jose": "^5.9.6"
+  }
+}

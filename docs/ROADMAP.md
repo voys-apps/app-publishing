@@ -8,8 +8,8 @@ Target stack (our apps look like this):
 | Backend | Supabase (Auth, Postgres, Edge Functions) |
 | Monetization | RevenueCat (SDK + Hosted UI + webhooks → credits / entitlements) |
 | Android | Google Play + Android Publisher API, EAS **local** AAB + Play API upload |
-| iOS | App Store Connect + EAS submit |
-| Secrets | SA JSON / API keys in `secrets/` or 1Password — never git |
+| iOS | App Store Connect API (metadata) + EAS submit / Transporter (IPA) |
+| Secrets | SA JSON / ASC `.p8` / API keys in `secrets/` or 1Password — never git |
 | Firebase | Management API for apps + configs; Analytics ToS / APNs may need Console |
 
 This repo should stay **store + monetization + Firebase provision + release automation**. App feature code (chat UI, receipts, etc.) stays in each app repo.
@@ -21,12 +21,14 @@ This repo should stay **store + monetization + Firebase provision + release auto
 | Piece | Role |
 | --- | --- |
 | `play-launchpad` | Play listing, IAP/subs, assets upload, closed testing, local AAB CI |
+| `apc-launchpad` | App Store Connect API: What’s New / promo / description / review notes |
 | `rc-launchpad` | Catalog + Hosted UI + **credits-bridge** (RTDN + Supabase webhook) |
-| `store-assets` | Generate + resize icon / feature graphic / screenshots |
+| `store-assets` | **Priority** — generate + exact-size QA (512 / 1024×500 / screenshots); upload via play-launchpad |
 | `firebase-launchpad` | Firebase apps, configs, Analytics handoff, FCM → EAS |
 | `auth-launchpad` | Google OAuth branding/clients + Supabase Google provider |
 | `admob-launchpad` | Console handoff + paste `ca-app-pub` → EAS env |
 | `templates/play-console` | Node scripts for any package name |
+| `templates/app-store-connect` | Node ESM + `jose` ASC JWT client |
 | `templates/revenuecat` | Python list/bootstrap catalog via API v2 |
 | `templates/revenuecat-webhook` | Thin Deno stub + constants map |
 | `templates/expo/easignore.example` | Local build keeps `.env*` |
@@ -42,7 +44,7 @@ Do **not** start these unless the user asks. Track here only.
 | Status | Skill / item | Notes |
 | --- | --- | --- |
 | TODO | `eas-ship` | Local-first release contract (`.easignore`, version bump, no cloud default) — some of this already lives in `play-launchpad/local-android-ci.md` |
-| TODO | `asc-launchpad` | App Store Connect mirror: metadata, IAP, TestFlight |
+| TODO | `apc-launchpad` deepen | Screenshots / preview sets, appInfoLocalizations (name/subtitle), ASC IAP, IPA upload helper |
 | TODO | `release-checklist` | Week-1 new-app walkthrough checklist |
 | TODO | Data Safety builder | Verified answers only → CSV/API |
 | TODO | Privacy / Terms / Support URL checklist | `voysapps.io/app/…` pattern |
@@ -65,6 +67,7 @@ Do **not** start these unless the user asks. Track here only.
 ```text
 skills/
   play-launchpad/          # shipped
+  apc-launchpad/           # shipped — ASC metadata v1
   rc-launchpad/            # shipped — catalog + paywall + credits-bridge
   store-assets/            # shipped — generation + sizes
   firebase-launchpad/      # shipped
@@ -72,10 +75,10 @@ skills/
   admob-launchpad/         # shipped
   release-checklist/       # TODO
   eas-ship/                # TODO
-  asc-launchpad/           # TODO
 
 templates/
   play-console/            # shipped
+  app-store-connect/       # shipped
   revenuecat/              # shipped
   revenuecat-webhook/      # shipped (stub)
   firebase/                # shipped
@@ -83,4 +86,4 @@ templates/
   expo/easignore.example   # shipped
 ```
 
-Ship one skill + one template at a time. Prefer extending `rc-launchpad` / `play-launchpad` over splinter skills unless the trigger clearly diverges.
+Ship one skill + one template at a time. Prefer extending `rc-launchpad` / `play-launchpad` / `apc-launchpad` over splinter skills unless the trigger clearly diverges.
