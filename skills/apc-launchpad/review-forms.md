@@ -118,6 +118,38 @@ new required attribute name, add it and retry — Apple expands the questionnair
 
 Paid apps: pick the correct tier the same way; equalize / schedule per product policy.
 
+## Subtitle (App Information)
+
+≤ **30** Unicode code points. Required for a polished listing; set for every
+locale you ship (`en-US`, `tr`, …).
+
+```http
+PATCH /v1/appInfoLocalizations/{id}
+```
+
+```json
+{
+  "data": {
+    "type": "appInfoLocalizations",
+    "id": "{id}",
+    "attributes": {
+      "subtitle": "AI CVs, cards & PDFs"
+    }
+  }
+}
+```
+
+Workflow:
+
+1. `GET /v1/apps/{id}/appInfos` → `appInfoId`
+2. `GET /v1/appInfos/{appInfoId}/appInfoLocalizations`
+3. `PATCH` each localization with a locale-appropriate subtitle
+4. Validate length with code-point count (not `.length` alone for emoji)
+
+Ask the user for copy if unclear; keep it benefit-focused and distinct from the
+app **name**. Same endpoint also accepts `name`, `privacyPolicyUrl`,
+`privacyChoicesUrl`.
+
 ## Privacy Policy URL (App Information)
 
 ```http
@@ -136,8 +168,9 @@ PATCH /v1/appInfoLocalizations/{id}
 }
 ```
 
-Also set version localization `supportUrl` / `marketingUrl` to the same site
-(`/support`, product home). Prefer `/app/<slug>/…` over legacy `/<slug>/…`.
+You can set `subtitle` + `privacyPolicyUrl` in one PATCH. Also set version
+localization `supportUrl` / `marketingUrl` to the same site (`/support`, product
+home). Prefer `/app/<slug>/…` over legacy `/<slug>/…`.
 
 ## Privacy Practices (Console only)
 

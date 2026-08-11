@@ -72,7 +72,7 @@ User: “ASC’de app açtım; abonelik + RC + metadata”
 
 1. Confirm **correct team** key (`auth:check` shows the new app).
 2. `ASC_APP_APPLE_ID` from `app:resolve`.
-3. App Information forms ([review-forms.md](review-forms.md)): category, content rights, age rating, free price, privacyPolicyUrl.
+3. App Information forms ([review-forms.md](review-forms.md)): category, content rights, age rating, free price, privacyPolicyUrl, **subtitle** (≤30).
 4. API IAP: group + group locs + subs + `/v2/inAppPurchases` + EN/TR + availability + prices/equalizations.
 5. Ask user for Pro + credits paywall screenshots → review shots + notes → `READY_TO_SUBMIT`.
 6. `rc-launchpad`: `create-app` `app_store` + SKUs + packages; RC dashboard ASC credentials.
@@ -89,6 +89,14 @@ User pastes ASC red box (category, age rating, content rights, price, privacy, b
 3. Build: if EAS says credentials not set up → user runs `eas credentials -p ios`, then agent builds/submits to ASC.
 4. Screenshots: leave to user unless they ask for store-assets.
 5. Confirm remaining blockers; never submit for review unbidden.
+
+## Example J — App subtitle
+
+User: “Subtitle ekle” / App Information subtitle empty
+
+1. Draft ≤30 code-point lines for `en-US` + `tr` (ask user if brand voice unclear).
+2. List `appInfoLocalizations` → `PATCH` `subtitle` on each.
+3. Confirm in ASC App Information; document pattern in [review-forms.md](review-forms.md).
 
 ## Example I — Console prices look empty but API has them
 

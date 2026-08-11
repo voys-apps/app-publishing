@@ -35,6 +35,7 @@ See [review-forms.md](review-forms.md).
 | Category | `PATCH /v1/appInfos/{id}` relationships `primaryCategory` / `secondaryCategory` |
 | Age rating | `PATCH /v1/ageRatingDeclarations/{id}` (GET_INSTANCE often 403) |
 | Privacy Policy URL | `PATCH /v1/appInfoLocalizations/{id}` `privacyPolicyUrl` |
+| Subtitle / name | `PATCH /v1/appInfoLocalizations/{id}` `subtitle` (≤30), `name` |
 | Free / paid app price | `POST /v1/appPriceSchedules` + USA `appPricePoints` |
 | App Privacy practices | **Console only** |
 
@@ -93,6 +94,7 @@ if `STATE_ERROR`.
 | `promotionalText` | 170 |
 | `whatsNew` / `description` | 4000 |
 | `keywords` | 100 |
+| App Info `subtitle` | 30 |
 
 Locales: `en-US`, `tr`, `es-ES`, `de-DE`, `fr-FR`, `zh-Hant`, `ar-SA` — list first.
 

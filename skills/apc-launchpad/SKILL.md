@@ -5,8 +5,8 @@ description: >-
   groups + auto-renewable + consumable IAPs (v2), prices/availability/equalizations,
   IAP review notes + screenshots, subscription-group localizations, app category /
   content rights / age ratings / free price schedule, version metadata + App Review
-  notes, privacyPolicyUrl. Use when the user mentions App Store Connect, ASC,
-  Unable to Add for Review, age rating, content rights, category, IAP pricing,
+  notes, privacyPolicyUrl, app subtitle (≤30). Use when the user mentions App Store Connect, ASC,
+  Unable to Add for Review, age rating, content rights, category, subtitle, IAP pricing,
   What's New, promotional text, eas submit (upload only), or apc-launchpad.
   Works in any iOS / Expo repo. Pair with play-launchpad, rc-launchpad, store-assets.
   Never Submit for Review unless the user explicitly asks.
@@ -40,6 +40,7 @@ invent endpoints — confirm against live Apple docs ([api-constraints.md](api-c
 | Subs + consumable IAPs + prices + review shot/note | API — [IAP section](#iap--subscriptions-api--handoff) |
 | Category / content rights / age rating / app free price | API — [App Information forms](#app-information-forms-unable-to-add-for-review) |
 | Privacy Policy URL (App Information) | `PATCH` `appInfoLocalizations.privacyPolicyUrl` |
+| App subtitle (≤30) | `PATCH` `appInfoLocalizations.subtitle` per locale |
 | **App Privacy practices** (nutrition labels) | **Console only** — Admin questionnaire |
 | Version What’s New / promo / description / keywords | `pnpm metadata:upsert` |
 | App Review notes (version) | upsert `REVIEW` (`contactPhone` `+CC …`) |
@@ -74,7 +75,7 @@ Task Progress:
 - [ ] 1. Correct-team ASC key (.p8) + ASC_BUNDLE_ID (+ ASC_TEAM_ID)
 - [ ] 2. Scaffold scripts/app-store-connect; pnpm auth:check
 - [ ] 3. App missing → bundleIds → Console New App → app:resolve → ASC_APP_APPLE_ID
-- [ ] 4. App Information forms (category, content rights, age rating, free price, privacyPolicyUrl)
+- [ ] 4. App Information forms (category, content rights, age rating, free price, privacyPolicyUrl, **subtitle**)
 - [ ] 5. IAP: group + subs + consumables + EN/TR + group locs + availability + prices/equalizations
 - [ ] 6. Ask user for paywall screenshots → upload review shots + real reviewNotes
 - [ ] 7. metadata-catalog + upsert (omit whatsNew on first version if STATE_ERROR)
@@ -95,6 +96,7 @@ asking the user to click. Full recipes: [review-forms.md](review-forms.md).
 | Age Ratings | `PATCH /v1/ageRatingDeclarations/{id}` — fill **all required** attrs (booleans vs enums; see review-forms) |
 | Price Tier | `POST /v1/appPriceSchedules` with USA **$0** `appPricePoint` for free apps |
 | Privacy Policy URL | `PATCH` each `appInfoLocalizations` → `privacyPolicyUrl` (canonical `https://voysapps.io/app/<slug>/privacy-policy`) |
+| Subtitle | `PATCH` each `appInfoLocalizations` → `subtitle` (≤30 code points; EN + TR minimum) |
 | Privacy Practices | **Console** App Privacy — open URL; agent cannot complete nutrition labels via API |
 | Build | `eas credentials -p ios` (interactive if unset) → `eas build -p ios` → `eas submit -p ios --latest` |
 | Screenshots | Leave to user / store-assets — **do not** invent listing art unless asked |
