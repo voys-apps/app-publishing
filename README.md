@@ -54,7 +54,7 @@ templates/
 | Skill | Use when |
 | --- | --- |
 | **play-launchpad** | Play listing, IAP/subs, closed testing, local AAB upload |
-| **apc-launchpad** | ASC What’s New / promotional text / review notes via API |
+| **apc-launchpad** | ASC metadata + bundle/IAP scaffold (subs via API; New App / pricing Console) |
 | **rc-launchpad** | RC catalog + paywalls + RTDN/Supabase credits webhook |
 | **store-assets** | Generate/resize 512 icon, 1024×500 feature, screenshots |
 | **firebase-launchpad** | Firebase apps, configs, FCM → EAS |

@@ -76,8 +76,10 @@ Never reuse a stale edit after another commit or Console change.
 | --- | --- |
 | `internal` | Internal testing |
 | `production` | Production |
+| `alpha` | **Preferred** for new closed / QA uploads when it already exists |
 | `beta` | Often **Open testing** in upgraded consoles — **not** safe to assume “closed” |
-| custom e.g. `receezy-closed` | Create with `tracks.create` + `type: CLOSED_TESTING` |
+| `receezy` / `receezy-closed` | **Frozen** — never upload or mutate (leave for headcount / mutual testing) |
+| other custom | Only if user names an **existing** track; **never** `tracks.create` |
 
 Testers resource:
 
@@ -101,8 +103,9 @@ If commit fails with:
 
 `The beta track has been upgraded to use open or closed testing; switch back to communities-based testing...`
 
-→ Stop using legacy `beta` for closed groups; create a **new** `CLOSED_TESTING`
-track instead.
+→ Stop using legacy `beta`. Prefer existing **`alpha`**. Do **not** create a new
+`CLOSED_TESTING` track — ask the user if `alpha` (or another existing track) is
+missing. Never target `receezy*`.
 
 ## Listing limits
 

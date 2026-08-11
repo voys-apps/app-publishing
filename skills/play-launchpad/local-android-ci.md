@@ -31,13 +31,14 @@ pnpm build:android
 
 cd scripts/play-console
 export GOOGLE_PLAY_SERVICE_ACCOUNT_JSON=./secrets/play-api-service-account.json
-export PLAY_CLOSED_TRACK=receezy-closed
-export PLAY_CLOSED_GROUP=receezy@googlegroups.com
+# Prefer existing alpha — never receezy* (leave that track alone); never create tracks
+export PLAY_CLOSED_TRACK=alpha
+# Optional: only after user confirms a Google Group for alpha
+# export PLAY_CLOSED_GROUP=your-testers@googlegroups.com
 
 pnpm testing:upload-aab -- \
   --aab="$(ls -t ../../*.aab | head -1)" \
   --track="$PLAY_CLOSED_TRACK" \
-  --group="$PLAY_CLOSED_GROUP" \
   --status=completed
 ```
 
@@ -57,3 +58,4 @@ pnpm testing:upload-aab -- \
 4. Ensure `.easignore` exists and **does not** ignore `.env*`.
 5. `versionCode` must exceed Play’s max (`edits.bundles.list`).
 6. Google Group / Reddit still **ask first** — [closed-testing.md](./closed-testing.md).
+7. Upload to **`alpha`** if it exists; **never** touch `receezy*`; **never** `tracks.create`.

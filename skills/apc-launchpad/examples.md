@@ -65,3 +65,15 @@ User: “Skill-key .p8’i EAS env’e koy”
    `ASC_BUNDLE_ID`, `ASC_TEAM_ID` on production/preview/development.
 4. `pnpm auth:check` locally — list apps; confirm target bundle.
 5. Never commit `.p8`, never paste PEM into PRs or skill repo.
+
+## Example G — New iOS app + IAP + RC (QuickDoc-style)
+
+User: “ASC’de app açtım; abonelik + RC + metadata”
+
+1. Confirm **correct team** key (`auth:check` shows the new app).
+2. `ASC_APP_APPLE_ID` from `app:resolve`.
+3. API: `subscriptionGroups` + `subscriptions` + `/v2/inAppPurchases` + EN/TR locs.
+4. Console: pricing + Ready to Submit; Paid Apps agreement.
+5. `rc-launchpad`: `create-app` `app_store` + register SKUs + attach packages.
+6. Metadata upsert (omit `whatsNew` on first version if STATE_ERROR).
+7. RC dashboard: paste ASC credentials for the iOS app.

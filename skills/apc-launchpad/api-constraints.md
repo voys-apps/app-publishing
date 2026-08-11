@@ -17,6 +17,32 @@ JWT header/payload (ES256):
 
 Sign with the `.p8` private key. Base URL: `https://api.appstoreconnect.apple.com`.
 
+## Bundle IDs & app create
+
+| Action | Endpoint | Result |
+| --- | --- | --- |
+| Create bundle | `POST /v1/bundleIds` | `platform`: `IOS` \| `MAC_OS` \| `UNIVERSAL` only — **not** `SERVICES` |
+| List apps | `GET /v1/apps` | Scoped to the API key’s team |
+| Create app | `POST /v1/apps` | **403** — resource does not allow CREATE → Console New App |
+
+After Console create: `pnpm app:resolve` → persist `ASC_APP_APPLE_ID`.
+
+## IAP
+
+| Action | Endpoint |
+| --- | --- |
+| Subscription group | `POST /v1/subscriptionGroups` |
+| Subscription | `POST /v1/subscriptions` |
+| Subscription localization | `POST /v1/subscriptionLocalizations` |
+| Consumable create | `POST /v2/inAppPurchases` (`/v1/inAppPurchases` CREATE forbidden) |
+| Consumable localization | `POST /v1/inAppPurchaseLocalizations` |
+
+Pricing and “Ready to Submit” remain Console handoffs. Paid Apps agreement must be active.
+
+## Review detail
+
+`POST /v1/appStoreReviewDetails` requires `contactPhone` like `+90 532 000 0000` (plus country code + spaces).
+
 ## App resolve
 
 | Approach | Endpoint |

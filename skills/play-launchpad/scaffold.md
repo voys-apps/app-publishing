@@ -90,26 +90,29 @@ assets/play-store/
 
 Icon often already exists at `assets/.../playstore.png` (512×512).
 
-## Closed-test script inputs
+## Closed / alpha script inputs
 
 Make track name + Google Group **configurable** (CLI args or env), e.g.:
 
-- `--track=my-closed`
-- `--group=testers@googlegroups.com`
-- defaults documented in script header
+- `--track=alpha` (default when env unset — **preferred**)
+- `--group=testers@googlegroups.com` (optional; ask first)
+- Reject / never default to `receezy` / `receezy-closed`
 
-Create track if missing:
+**Do not** create tracks. If the target track is missing after `edits.tracks.list`,
+fail with a clear message listing existing tracks — Console or user decides.
 
 ```js
-await androidpublisher.edits.tracks.create({
-  packageName,
-  editId,
-  requestBody: {
-    track: trackName,
-    type: 'CLOSED_TESTING',
-    formFactor: 'DEFAULT'
-  }
-})
+// BAD — do not scaffold auto-create
+// await androidpublisher.edits.tracks.create({ ... })
+
+const tracks = await androidpublisher.edits.tracks.list({ packageName, editId })
+const names = (tracks.data.tracks || []).map(t => t.track)
+if (!names.includes(trackName)) {
+  throw new Error(`Track "${trackName}" missing. Existing: ${names.join(', ')}. Do not create tracks.`)
+}
+if (/^receezy/i.test(trackName)) {
+  throw new Error(`Track "${trackName}" is off-limits (receezy*). Use alpha or ask the user.`)
+}
 ```
 
 Use latest `edits.bundles.list` versionCode unless user supplies an AAB path to upload.

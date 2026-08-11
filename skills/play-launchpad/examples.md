@@ -1,15 +1,17 @@
 # Play Launchpad — examples
 
-## Example A — New app, first closed test
+## Example A — Next build on alpha (do not touch receezy)
 
-User: “Play’de closed test aç, grup X, son AAB”
+User: “Yeni AAB’yi closed/alpha’ya at”
 
 1. Confirm `PACKAGE_NAME` and SA path.
-2. `pnpm auth:check`
-3. Ensure listing + icon exist (draft apps still need minimum store presence).
-4. `pnpm testing:create-closed -- --track=qa-closed --group=x@googlegroups.com`
+2. `pnpm auth:check` + list tracks (`--dry-run`).
+3. If **`alpha`** exists → propose upload there. If only `receezy*` exists → **do not
+   use it**; ask the user (never create a new track).
+4. After yes: `pnpm testing:upload-aab -- --aab=… --track=alpha --status=completed`
+   (optional `--group=` only if user confirmed).
 5. If commit fails with draft-app error → leave release as `draft`, tell user
-   Console → Closed testing → Start rollout after first-launch checklist.
+   Console → Start rollout after first-launch checklist.
 
 ## Example B — Upsert credit packs
 

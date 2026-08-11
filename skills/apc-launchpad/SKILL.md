@@ -1,19 +1,21 @@
 ---
 name: apc-launchpad
 description: >-
-  Automate App Store Connect via ASC API: API-key JWT auth, What's New /
+  Automate App Store Connect via ASC API: API-key JWT auth, bundle ID create,
+  subscription groups + auto-renewable subs + consumable IAPs (v2), What's New /
   promotional text / description / keywords upsert, review notes, and app
   resolve by bundle ID. Use when the user mentions App Store Connect, ASC,
-  What's New, promotional text, iOS store metadata, Transporter after-upload
-  listing, release notes upload, or apc-launchpad. Works in any iOS / Expo
-  repo. Pair with play-launchpad (Android) and store-assets (screenshots).
+  What's New, promotional text, iOS store metadata, IAP, subscriptions,
+  Transporter after-upload listing, release notes upload, or apc-launchpad.
+  Works in any iOS / Expo repo. Pair with play-launchpad (Android),
+  rc-launchpad (SKU sync), and store-assets (screenshots).
 ---
 
 # APC Launchpad
 
 Ship and maintain **any** App Store Connect listing through the **App Store
 Connect API**. Prefer API scripts over Transporter UI paste / Playwright for
-version metadata and review notes.
+version metadata, review notes, and IAP scaffolding.
 
 **Install** (from the all-in-one publishing toolkit):
 
@@ -36,14 +38,30 @@ confirm against live Apple docs when writing or changing client code.
 | Need | Tool |
 | --- | --- |
 | Auth / list apps | ASC API + `pnpm auth:check` |
-| Resolve numeric Apple ID from bundle | `pnpm app:resolve` |
+| Resolve numeric Apple ID from bundle | `pnpm app:resolve` → set `ASC_APP_APPLE_ID` |
+| Register bundle ID | `POST /v1/bundleIds` (IOS / MAC_OS / UNIVERSAL) |
+| **Create ASC app record** | **Console only** — `POST /v1/apps` returns 403 CREATE forbidden |
+| Subscription group + auto-renewable | `POST /v1/subscriptionGroups` + `POST /v1/subscriptions` + localizations |
+| Consumable IAP | `POST /v2/inAppPurchases` (not `/v1/inAppPurchases`) + localizations |
+| Pricing / Ready to Submit | **Console handoff** (price points) |
 | What’s New / promotional / description / keywords | `pnpm metadata:upsert` |
-| App Review notes / demo account | same upsert via `REVIEW` in catalog |
-| IPA / TestFlight binary upload | **Not in v1 scripts** — use `eas submit` or Transporter; see below |
+| App Review notes | same upsert via `REVIEW` (needs `contactPhone` `+CC …`) |
+| IPA / TestFlight binary upload | **Not in scripts** — `eas submit` / Transporter |
 | Screenshots / previews | ASC Console or later template; generation via **store-assets** |
 | Play Store (Android) | **play-launchpad** |
 
 **Do not** use Playwright to fill ASC forms when the API covers the task.
+
+## Multi-team keys (Voys)
+
+ASC API keys are **per Apple Developer team / provider**, not per Gmail user.
+
+| Example | Team | Apps visible |
+| --- | --- | --- |
+| Receezy / Smart Receipt key | e.g. Voys Apps (older Issuer) | Receezy, Sokak Lambası, Smart Receipt |
+| Aliye `skill-key` | e.g. `TMX779UK9D` | Words Journey, Varlık360 (`com.appsvoys.varlik360`), Slide AI, QuickDoc |
+
+If `auth:check` is missing an app you expect (e.g. Stock360/Varlık360), you are on the **wrong Issuer/Key** — switch `.env` to the team that owns the app. Account Holder UI login ≠ which team the `.p8` belongs to.
 
 ## Consult official API docs
 
@@ -69,15 +87,31 @@ Use `WebFetch` / `WebSearch` in the same turn you scaffold or edit API code.
 
 ```
 Task Progress:
-- [ ] 1. Locate ASC API key (.p8) + Issuer ID + Key ID (never commit)
-- [ ] 2. Set ASC_BUNDLE_ID (and optional ASC_APP_APPLE_ID / ASC_VERSION)
-- [ ] 3. Scaffold scripts/app-store-connect from templates/app-store-connect
-- [ ] 4. pnpm auth:check — lists apps visible to the key
-- [ ] 5. pnpm app:resolve — confirm numeric Apple ID matches ASC App Information
-- [ ] 6. Fill src/metadata-catalog.mjs (locales + what's new / promo / review notes)
-- [ ] 7. pnpm metadata:upsert -- --dry-run then real upsert
-- [ ] 8. Binary: eas submit / Transporter (separate); report ASC relationship ID mismatches
+- [ ] 1. Locate ASC API key (.p8) + Issuer ID + Key ID for the **correct team**
+- [ ] 2. Set ASC_BUNDLE_ID (+ ASC_TEAM_ID); scaffold scripts/app-store-connect
+- [ ] 3. pnpm auth:check — confirm expected apps appear
+- [ ] 4. If app missing: POST bundleIds if needed → **Console New App** → app:resolve → ASC_APP_APPLE_ID
+- [ ] 5. IAP: subscriptionGroups + subscriptions; consumables via POST /v2/inAppPurchases; EN/TR locs
+- [ ] 6. Console: pricing + Ready to Submit; Paid Apps agreement
+- [ ] 7. Fill metadata-catalog.mjs; upsert (omit whatsNew on first version if STATE_ERROR)
+- [ ] 8. RC: create-app app_store + attach SKUs (rc-launchpad); paste ASC credentials in RC dashboard
+- [ ] 9. Binary: eas submit / Transporter
 ```
+
+## IAP / subscriptions (API + handoff)
+
+Reverse-DNS IDs shared with Play when possible (`com.<co>.<app>.pro.monthly`, `.credits10k`, …).
+
+| Step | API | Notes |
+| --- | --- | --- |
+| Group | `POST /v1/subscriptionGroups` | `referenceName` e.g. `Pro` |
+| Auto-renewable | `POST /v1/subscriptions` | `productId`, `subscriptionPeriod` (`ONE_MONTH` / `ONE_YEAR`) |
+| Sub localization | `POST /v1/subscriptionLocalizations` | `en-US`, `tr`, … |
+| Consumable | `POST /v2/inAppPurchases` | `/v1/inAppPurchases` CREATE is **403** |
+| IAP localization | `POST /v1/inAppPurchaseLocalizations` | relate `inAppPurchaseV2` |
+| Price / submit | Console | Agent opens Monetization URLs |
+
+Then register the same `store_identifier`s in RevenueCat (**rc-launchpad**) and attach to packages.
 
 ## Credentials (never paste secrets into chat)
 
@@ -180,10 +214,13 @@ the IPA is often fine — ASC app ID / provider / agreements mismatch. See
 3. **Character limits** (Unicode code points): promotionalText ≤170, whatsNew ≤4000,
    description ≤4000, keywords ≤100, subtitle ≤30 (app info localization — future).
 4. **Editable state:** `whatsNew` / description usually need a version in an
-   editable state (e.g. Prepare for Submission). `promotionalText` can update
-   more often on live apps.
+   editable state. **First version** often rejects `whatsNew` (`STATE_ERROR`) —
+   omit it and set description / promotionalText / keywords only.
 5. **gitignore** `**/secrets/**` except `secrets/README.md`; ignore `*.p8`.
 6. Prefer **pnpm** (`pnpm install`, `pnpm <script>`) — not npm.
+7. **Never** assume one team key sees all Voys apps — run `auth:check` and switch
+   Issuer/Key when apps are missing.
+8. **`POST /v1/apps` CREATE is forbidden** — New App is always a Console handoff.
 
 ## Quick commands
 

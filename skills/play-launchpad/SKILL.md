@@ -42,9 +42,9 @@ against live Google docs when writing or changing client code.
 | Store listing text + contact details | `edits.listings` + `edits.details` |
 | Icon / feature graphic / screenshots | `edits.images` (upload media) |
 | Local AAB publish | **Local first** — `pnpm build:android` + `testing:upload-aab`; never cloud unless asked — [local-android-ci.md](./local-android-ci.md) |
-| Closed testing + Google Group | custom `CLOSED_TESTING` track + `edits.testers` — **ask first** |
+| Closed testing + Google Group | existing **`alpha`**; never **`receezy*`**; never `tracks.create` — [closed-testing.md](./closed-testing.md) |
 | Data Safety CSV | `applications.dataSafety` (only with verified answers) |
-| Visual mock / feature graphic / screenshots | [`store-assets`](../store-assets/SKILL.md) (`GenerateImage` + resize) → then this skill’s upload |
+| Store listing graphics (icon / feature / screenshots) | **[`store-assets`](../store-assets/SKILL.md)** first (generate + size QA) → then this skill’s `listing:upload-assets` |
 
 **Do not** use Playwright to fill Play Console forms when the API covers the task.
 
@@ -80,7 +80,7 @@ Task Progress:
 - [ ] 4. Catalog: one-time products / subscriptions from project catalog
 - [ ] 5. Listing text (limits) + details (email / website)
 - [ ] 6. Assets: icon 512×512, feature graphic 1024×500, phone screenshots
-- [ ] 7. Closed testing: **local only** `pnpm build:android` + `testing:upload-aab` (see local-android-ci.md). Ensure `.easignore` exists and does **not** ignore `.env*`. Never use cloud build unless user asks. Or reuse bundle via `testing:create-closed`
+- [ ] 7. Testing: **local only** `pnpm build:android` + `testing:upload-aab` → existing **`alpha`** (never `receezy*`, never create tracks) — [closed-testing.md](./closed-testing.md) / [local-android-ci.md](./local-android-ci.md). Ensure `.easignore` exists and does **not** ignore `.env*`. Never cloud unless user asks.
 - [ ] 8. Report what API cannot do (draft-app first-launch blockers)
 ```
 
@@ -152,13 +152,16 @@ generic.
 1. **Legacy `inappproducts` is often blocked** on apps migrated to the new
    catalog (“Please migrate to the new publishing API”). Use
    `monetization.onetimeproducts` and `monetization.subscriptions`.
-2. **Closed testing:** do **not** assume track `beta` = closed. Create a custom
-   track with `type: CLOSED_TESTING`, `formFactor: DEFAULT`. Assign testers via
+2. **Closed / alpha testing:** Prefer existing **`alpha`** for new AAB / releases.
+   **Never touch** `receezy` / `receezy-closed` (leave that track alone).
+   **Never** call `edits.tracks.create` — if `alpha` (or the user-named track) is
+   missing, stop and ask; do not invent custom tracks. Do **not** assume
+   `beta` = closed. Assign testers via
    `googleGroups: ["group@googlegroups.com"]` (email lists unsupported by API).
    **Ask the user before** creating a Google Group, assigning testers, running
-   `testing:create-closed` for real, or posting a Reddit recruit — see
-   [closed-testing.md](./closed-testing.md). Check tracks via API / `--dry-run` first,
-   then propose and wait for “yes”.
+   `testing:create-closed` / `testing:upload-aab` for real, or posting a Reddit
+   recruit — see [closed-testing.md](./closed-testing.md). List tracks /
+   `--dry-run` first, propose **`alpha`**, wait for “yes”.
 3. **Draft apps:** first release on a never-published app may only allow
    `status: "draft"`. Promoting to `completed` fails with
    `Only releases with status draft may be created on draft app.` Tell the user
@@ -182,9 +185,10 @@ pnpm auth:check
 pnpm products:upsert-credits
 pnpm listing:upsert
 pnpm listing:upload-assets
-pnpm testing:create-closed
-pnpm testing:upload-aab -- --aab=./app.aab --track=receezy-closed --status=completed
+pnpm testing:create-closed -- --track=alpha --dry-run
+pnpm testing:upload-aab -- --aab=./app.aab --track=alpha --status=completed
 ```
+
 
 Local Android CI (build on machine, upload via API — **not** `eas submit`):
 [local-android-ci.md](./local-android-ci.md).

@@ -21,11 +21,11 @@ This repo should stay **store + monetization + Firebase provision + release auto
 | Piece | Role |
 | --- | --- |
 | `play-launchpad` | Play listing, IAP/subs, assets upload, closed testing, local AAB CI |
-| `apc-launchpad` | App Store Connect API: What’s New / promo / description / review notes |
+| `apc-launchpad` | ASC: metadata, bundleIds, subscriptionGroups/subscriptions, consumables via `/v2/inAppPurchases`; New App + pricing Console |
 | `rc-launchpad` | Catalog + Hosted UI + **credits-bridge** (RTDN + Supabase webhook) |
 | `store-assets` | **Priority** — generate + exact-size QA (512 / 1024×500 / screenshots); upload via play-launchpad |
 | `firebase-launchpad` | Firebase apps, configs, Analytics handoff, FCM → EAS |
-| `auth-launchpad` | Google OAuth branding/clients + Supabase Google provider |
+| `auth-launchpad` | Google + Apple (SIWA) social login → Supabase |
 | `admob-launchpad` | Console handoff + paste `ca-app-pub` → EAS env |
 | `templates/play-console` | Node scripts for any package name |
 | `templates/app-store-connect` | Node ESM + `jose` ASC JWT client |
@@ -44,7 +44,9 @@ Do **not** start these unless the user asks. Track here only.
 | Status | Skill / item | Notes |
 | --- | --- | --- |
 | TODO | `eas-ship` | Local-first release contract (`.easignore`, version bump, no cloud default) — some of this already lives in `play-launchpad/local-android-ci.md` |
-| TODO | `apc-launchpad` deepen | Screenshots / preview sets, appInfoLocalizations (name/subtitle), ASC IAP, IPA upload helper |
+| TODO | `apc-launchpad` deepen | Screenshots / preview sets, appInfoLocalizations (name/subtitle), price-point API, IPA upload helper |
+| DONE | `apc-launchpad` IAP scaffold | subscriptionGroups + subscriptions + `/v2/inAppPurchases`; multi-team key note |
+| DONE | `auth-launchpad` Apple | SIWA capability API + Services ID/key Console handoff |
 | TODO | `release-checklist` | Week-1 new-app walkthrough checklist |
 | TODO | Data Safety builder | Verified answers only → CSV/API |
 | TODO | Privacy / Terms / Support URL checklist | `voysapps.io/app/…` pattern |
