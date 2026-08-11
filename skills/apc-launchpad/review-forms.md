@@ -92,8 +92,8 @@ Prefer reading current attrs via
 attribute set (omit read-only `ageRatingOverride*` / `koreaAgeRatingOverride` /
 `kidsAgeBand` / `developerAgeRatingInfoUrl`).
 
-Example baseline for an AI productivity app with AdMob + in-app chat + user docs
-**and** social / under-13 lockout:
+Example baseline for an AI productivity app with AdMob, **private** user docs,
+and AI assistant chat (not user↔user messaging / not a social feed):
 
 ```json
 {
@@ -115,13 +115,13 @@ Example baseline for an AI productivity app with AdMob + in-app chat + user docs
       "violenceCartoonOrFantasy": "NONE",
       "violenceRealistic": "NONE",
       "violenceRealisticProlongedGraphicOrSadistic": "NONE",
-      "unrestrictedWebAccess": true,
+      "unrestrictedWebAccess": false,
       "advertising": true,
-      "messagingAndChat": true,
-      "userGeneratedContent": true,
-      "socialMedia": true,
-      "socialMediaAgeRestricted": true,
-      "ageAssurance": true,
+      "messagingAndChat": false,
+      "userGeneratedContent": false,
+      "socialMedia": false,
+      "socialMediaAgeRestricted": false,
+      "ageAssurance": false,
       "healthOrWellnessTopics": false,
       "lootBox": false,
       "parentalControls": false
@@ -130,9 +130,12 @@ Example baseline for an AI productivity app with AdMob + in-app chat + user docs
 }
 ```
 
-No social feed → set `socialMedia: false`, `socialMediaAgeRestricted: false`, and
-keep `ageAssurance` accurate for the app. Adjust other booleans to the real app
-(no ads → `advertising: false`). On `409` with a new required attribute name, add
+Only flip Features to `true` when the **shipped** product matches Apple’s
+definition (social feed / broad UGC distribution / user↔user messaging /
+in-app unrestricted browsing / Declared Age Range). Do not set
+`socialMedia`/`socialMediaAgeRestricted`/`ageAssurance` to yes by default.
+
+No ads → `advertising: false`. On `409` with a new required attribute name, add
 it and retry — Apple expands the questionnaire.
 
 ## App price (free)
