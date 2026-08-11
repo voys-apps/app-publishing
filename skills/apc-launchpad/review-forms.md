@@ -69,9 +69,31 @@ Types matter:
 | Attribute | Type (typical) |
 | --- | --- |
 | `alcoholTobaccoOrDrugUseOrReferences`, `contests`, `gamblingSimulated`, violence/sex/horror/mature/medical/profanity/guns… | enum string `NONE` / `INFREQUENT` / `FREQUENT` |
-| `gambling`, `lootBox`, `parentalControls`, `ageAssurance`, `healthOrWellnessTopics`, `advertising`, `messagingAndChat`, `userGeneratedContent`, `unrestrictedWebAccess` | **boolean** |
+| `gambling`, `lootBox`, `parentalControls`, `ageAssurance`, `healthOrWellnessTopics`, `advertising`, `messagingAndChat`, `userGeneratedContent`, `unrestrictedWebAccess`, `socialMedia`, `socialMediaAgeRestricted` | **boolean** |
 
-Example baseline for an AI productivity app with AdMob + in-app chat + user docs:
+### Social Media (ASC API 4.4.1+)
+
+Console **Age Ratings → Features** maps to:
+
+| Console label | Attribute |
+| --- | --- |
+| Social Media | `socialMedia` |
+| Social Media Disabled for Users Under 13 | `socialMediaAgeRestricted` |
+
+**Prerequisites** (Apple rejects the PATCH otherwise):
+
+1. `socialMedia: true` requires `userGeneratedContent: true` (same PATCH or already set).
+2. `socialMediaAgeRestricted: true` requires **both** `socialMedia: true` and `ageAssurance: true`.
+
+`ageAssurance` means the app uses age assurance (e.g. Declared Age Range API) before enabling social features for under-13. Only set `socialMedia*` / `ageAssurance` when they match the real product — do not invent Declared Age Range if the app does not call it.
+
+Prefer reading current attrs via
+`GET /v1/apps/{id}/appInfos?include=ageRatingDeclaration`, then PATCH with a full
+attribute set (omit read-only `ageRatingOverride*` / `koreaAgeRatingOverride` /
+`kidsAgeBand` / `developerAgeRatingInfoUrl`).
+
+Example baseline for an AI productivity app with AdMob + in-app chat + user docs
+**and** social / under-13 lockout:
 
 ```json
 {
@@ -97,17 +119,21 @@ Example baseline for an AI productivity app with AdMob + in-app chat + user docs
       "advertising": true,
       "messagingAndChat": true,
       "userGeneratedContent": true,
+      "socialMedia": true,
+      "socialMediaAgeRestricted": true,
+      "ageAssurance": true,
       "healthOrWellnessTopics": false,
       "lootBox": false,
-      "parentalControls": false,
-      "ageAssurance": false
+      "parentalControls": false
     }
   }
 }
 ```
 
-Adjust booleans to the real app (no ads → `advertising: false`). On `409` with a
-new required attribute name, add it and retry — Apple expands the questionnaire.
+No social feed → set `socialMedia: false`, `socialMediaAgeRestricted: false`, and
+keep `ageAssurance` accurate for the app. Adjust other booleans to the real app
+(no ads → `advertising: false`). On `409` with a new required attribute name, add
+it and retry — Apple expands the questionnaire.
 
 ## App price (free)
 

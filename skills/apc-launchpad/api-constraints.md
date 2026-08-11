@@ -33,7 +33,7 @@ See [review-forms.md](review-forms.md).
 | --- | --- |
 | Content rights | `PATCH /v1/apps/{id}` `contentRightsDeclaration` |
 | Category | `PATCH /v1/appInfos/{id}` relationships `primaryCategory` / `secondaryCategory` |
-| Age rating | `PATCH /v1/ageRatingDeclarations/{id}` (GET_INSTANCE often 403) |
+| Age rating | `PATCH /v1/ageRatingDeclarations/{id}` (GET_INSTANCE often 403). Booleans include `socialMedia`, `socialMediaAgeRestricted`, `ageAssurance` (API 4.4.1+). `socialMedia` ⇒ `userGeneratedContent`; `socialMediaAgeRestricted` ⇒ `socialMedia` + `ageAssurance`. |
 | Privacy Policy URL | `PATCH /v1/appInfoLocalizations/{id}` `privacyPolicyUrl` |
 | Subtitle / name | `PATCH /v1/appInfoLocalizations/{id}` `subtitle` (≤30), `name` |
 | Free / paid app price | `POST /v1/appPriceSchedules` + USA `appPricePoints` |

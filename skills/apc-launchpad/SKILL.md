@@ -93,7 +93,7 @@ asking the user to click. Full recipes: [review-forms.md](review-forms.md).
 | --- | --- |
 | Primary Category | `PATCH /v1/appInfos/{id}` → `primaryCategory` (e.g. `PRODUCTIVITY`) |
 | Content Rights | `PATCH /v1/apps/{id}` → `contentRightsDeclaration` (`DOES_NOT_USE_THIRD_PARTY_CONTENT` or `USES_THIRD_PARTY_CONTENT`) |
-| Age Ratings | `PATCH /v1/ageRatingDeclarations/{id}` — fill **all required** attrs (booleans vs enums; see review-forms) |
+| Age Ratings | `PATCH /v1/ageRatingDeclarations/{id}` — fill **all required** attrs (booleans vs enums; include `socialMedia` / `socialMediaAgeRestricted` + `ageAssurance` when Features asks; see review-forms) |
 | Price Tier | `POST /v1/appPriceSchedules` with USA **$0** `appPricePoint` for free apps |
 | Privacy Policy URL | `PATCH` each `appInfoLocalizations` → `privacyPolicyUrl` (canonical `https://voysapps.io/app/<slug>/privacy-policy`) |
 | Subtitle | `PATCH` each `appInfoLocalizations` → `subtitle` (≤30 code points; EN + TR minimum) |
