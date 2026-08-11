@@ -72,8 +72,26 @@ User: “ASC’de app açtım; abonelik + RC + metadata”
 
 1. Confirm **correct team** key (`auth:check` shows the new app).
 2. `ASC_APP_APPLE_ID` from `app:resolve`.
-3. API: `subscriptionGroups` + `subscriptions` + `/v2/inAppPurchases` + EN/TR locs.
-4. Console: pricing + Ready to Submit; Paid Apps agreement.
-5. `rc-launchpad`: `create-app` `app_store` + register SKUs + attach packages.
-6. Metadata upsert (omit `whatsNew` on first version if STATE_ERROR).
-7. RC dashboard: paste ASC credentials for the iOS app.
+3. App Information forms ([review-forms.md](review-forms.md)): category, content rights, age rating, free price, privacyPolicyUrl.
+4. API IAP: group + group locs + subs + `/v2/inAppPurchases` + EN/TR + availability + prices/equalizations.
+5. Ask user for Pro + credits paywall screenshots → review shots + notes → `READY_TO_SUBMIT`.
+6. `rc-launchpad`: `create-app` `app_store` + SKUs + packages; RC dashboard ASC credentials.
+7. Metadata upsert (omit `whatsNew` on first version if STATE_ERROR).
+8. User: App Privacy practices + listing screenshots; `eas credentials` → build → `eas submit` (upload only).
+9. **Do not** Submit for Review unless asked.
+
+## Example H — Unable to Add for Review
+
+User pastes ASC red box (category, age rating, content rights, price, privacy, build).
+
+1. Fix all API-capable rows from [review-forms.md](review-forms.md) in one pass.
+2. Open App Privacy URL for practices (Console).
+3. Build: if EAS says credentials not set up → user runs `eas credentials -p ios`, then agent builds/submits to ASC.
+4. Screenshots: leave to user unless they ask for store-assets.
+5. Confirm remaining blockers; never submit for review unbidden.
+
+## Example I — Console prices look empty but API has them
+
+1. `GET /v1/subscriptions/{id}/prices?filter[territory]=USA` — confirm `customerPrice`.
+2. Compare price count to territory count; finish equalizations if short.
+3. Tell user to hard-refresh ASC; monthly/yearly should move to Ready to Submit.

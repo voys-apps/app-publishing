@@ -54,7 +54,7 @@ templates/
 | Skill | Use when |
 | --- | --- |
 | **play-launchpad** | Play listing, IAP/subs, closed testing, local AAB upload |
-| **apc-launchpad** | ASC metadata + bundle/IAP scaffold (subs via API; New App / pricing Console) |
+| **apc-launchpad** | ASC metadata + IAP prices/review shots + App Information forms (category/age/rights); App Privacy practices Console |
 | **rc-launchpad** | RC catalog + paywalls + RTDN/Supabase credits webhook |
 | **store-assets** | Generate/resize 512 icon, 1024×500 feature, screenshots |
 | **firebase-launchpad** | Firebase apps, configs, FCM → EAS |
@@ -116,7 +116,8 @@ Never commit service-account JSON, ASC `.p8` keys, or RC `sk_` keys.
 | `ASC_VERSION` | no | Marketing version e.g. `1.3.1` |
 | `ASC_TEAM_ID` | no | Developer Team ID |
 
-Node 18+ + `jose`. IPA upload remains `eas submit` / Transporter (v1).
+Node 18+ + `jose`. IPA upload: `eas submit` / Transporter (**not** Submit for Review).
+See skill `review-forms.md` for Unable to Add for Review blockers.
 
 ### rc-launchpad
 
@@ -132,7 +133,7 @@ Python 3.9+ (+ Pillow for paywall image work).
 
 ## What’s next (TODO)
 
-See [docs/ROADMAP.md](docs/ROADMAP.md): `eas-ship`, `release-checklist`, Data Safety, privacy URLs, ASC screenshots/IAP deepen.
+See [docs/ROADMAP.md](docs/ROADMAP.md): `eas-ship`, `release-checklist`, Data Safety, ASC listing screenshot upload deepen.
 
 ## License
 

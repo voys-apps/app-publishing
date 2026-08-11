@@ -1,23 +1,23 @@
 ---
 name: apc-launchpad
 description: >-
-  Automate App Store Connect via ASC API: API-key JWT auth, bundle ID create,
-  subscription groups + auto-renewable subs + consumable IAPs (v2), What's New /
-  promotional text / description / keywords upsert, review notes, and app
-  resolve by bundle ID. Use when the user mentions App Store Connect, ASC,
-  What's New, promotional text, iOS store metadata, IAP, subscriptions,
-  Transporter after-upload listing, release notes upload, or apc-launchpad.
-  Works in any iOS / Expo repo. Pair with play-launchpad (Android),
-  rc-launchpad (SKU sync), and store-assets (screenshots).
+  Automate App Store Connect via ASC API: JWT auth, bundle ID, subscription
+  groups + auto-renewable + consumable IAPs (v2), prices/availability/equalizations,
+  IAP review notes + screenshots, subscription-group localizations, app category /
+  content rights / age ratings / free price schedule, version metadata + App Review
+  notes, privacyPolicyUrl. Use when the user mentions App Store Connect, ASC,
+  Unable to Add for Review, age rating, content rights, category, IAP pricing,
+  What's New, promotional text, eas submit (upload only), or apc-launchpad.
+  Works in any iOS / Expo repo. Pair with play-launchpad, rc-launchpad, store-assets.
+  Never Submit for Review unless the user explicitly asks.
 ---
 
 # APC Launchpad
 
 Ship and maintain **any** App Store Connect listing through the **App Store
-Connect API**. Prefer API scripts over Transporter UI paste / Playwright for
-version metadata, review notes, and IAP scaffolding.
+Connect API**. Prefer API over Console paste / Playwright when endpoints exist.
 
-**Install** (from the all-in-one publishing toolkit):
+**Install:**
 
 ```bash
 npx skills add voys-apps/app-publishing --skill apc-launchpad
@@ -25,221 +25,160 @@ npx skills add voys-apps/app-publishing --skill apc-launchpad
 npx skills add voys-apps/app-publishing -g
 ```
 
-Reusable Node scripts live in this repo at `templates/app-store-connect/` —
-copy into app repos as `scripts/app-store-connect/`.
-
-Use this skill in **any** project. If the repo already has
-`scripts/app-store-connect/` (or similar), prefer those. Otherwise scaffold
-from the template or [scaffold.md](scaffold.md). Do not invent endpoints —
-confirm against live Apple docs when writing or changing client code.
+Reusable Node scripts: `templates/app-store-connect/` → copy as
+`scripts/app-store-connect/`. Prefer existing scripts in the app repo. Do not
+invent endpoints — confirm against live Apple docs ([api-constraints.md](api-constraints.md)).
 
 ## When to use which tool
 
 | Need | Tool |
 | --- | --- |
 | Auth / list apps | ASC API + `pnpm auth:check` |
-| Resolve numeric Apple ID from bundle | `pnpm app:resolve` → set `ASC_APP_APPLE_ID` |
-| Register bundle ID | `POST /v1/bundleIds` (IOS / MAC_OS / UNIVERSAL) |
-| **Create ASC app record** | **Console only** — `POST /v1/apps` returns 403 CREATE forbidden |
-| Subscription group + auto-renewable | `POST /v1/subscriptionGroups` + `POST /v1/subscriptions` + localizations |
-| Consumable IAP | `POST /v2/inAppPurchases` (not `/v1/inAppPurchases`) + localizations |
-| Pricing / Ready to Submit | **Console handoff** (price points) |
-| What’s New / promotional / description / keywords | `pnpm metadata:upsert` |
-| App Review notes | same upsert via `REVIEW` (needs `contactPhone` `+CC …`) |
-| IPA / TestFlight binary upload | **Not in scripts** — `eas submit` / Transporter |
-| Screenshots / previews | ASC Console or later template; generation via **store-assets** |
-| Play Store (Android) | **play-launchpad** |
+| Resolve Apple ID | `pnpm app:resolve` → `ASC_APP_APPLE_ID` |
+| Register bundle ID | `POST /v1/bundleIds` |
+| **Create ASC app record** | **Console only** (`POST /v1/apps` → 403) |
+| Subs + consumable IAPs + prices + review shot/note | API — [IAP section](#iap--subscriptions-api--handoff) |
+| Category / content rights / age rating / app free price | API — [App Information forms](#app-information-forms-unable-to-add-for-review) |
+| Privacy Policy URL (App Information) | `PATCH` `appInfoLocalizations.privacyPolicyUrl` |
+| **App Privacy practices** (nutrition labels) | **Console only** — Admin questionnaire |
+| Version What’s New / promo / description / keywords | `pnpm metadata:upsert` |
+| App Review notes (version) | upsert `REVIEW` (`contactPhone` `+CC …`) |
+| Listing screenshots / previews | User / **store-assets**; upload Console (API deepen later) |
+| IPA upload to ASC | `eas submit` — **does not** submit for review |
+| Submit for Review | **Only if user explicitly asks** |
+| Play Store | **play-launchpad** |
 
-**Do not** use Playwright to fill ASC forms when the API covers the task.
+**Do not** use Playwright when the API covers the task.
 
 ## Multi-team keys (Voys)
 
-ASC API keys are **per Apple Developer team / provider**, not per Gmail user.
+ASC API keys are **per Apple Developer team / provider**, not per Gmail.
 
 | Example | Team | Apps visible |
 | --- | --- | --- |
-| Receezy / Smart Receipt key | e.g. Voys Apps (older Issuer) | Receezy, Sokak Lambası, Smart Receipt |
-| Aliye `skill-key` | e.g. `TMX779UK9D` | Words Journey, Varlık360 (`com.appsvoys.varlik360`), Slide AI, QuickDoc |
+| Receezy / Smart Receipt key | older Issuer | Receezy, Sokak Lambası, Smart Receipt |
+| Aliye `skill-key` | e.g. `TMX779UK9D` | Words Journey, Varlık360, Slide AI, QuickDoc |
 
-If `auth:check` is missing an app you expect (e.g. Stock360/Varlık360), you are on the **wrong Issuer/Key** — switch `.env` to the team that owns the app. Account Holder UI login ≠ which team the `.p8` belongs to.
+Missing expected app → wrong Issuer/Key. Switch `.env`. Account Holder UI ≠ `.p8` team.
 
 ## Consult official API docs
 
-**Required before generating or changing API client code:**
-
-1. Fetch / open official docs — do not invent paths or payloads:
-   - Overview: https://developer.apple.com/documentation/appstoreconnectapi
-   - Creating API keys: https://developer.apple.com/documentation/appstoreconnectapi/creating_api_keys_for_app_store_connect_api
-   - Apps: https://developer.apple.com/documentation/appstoreconnectapi/list_apps
-   - App Store versions: https://developer.apple.com/documentation/appstoreconnectapi/list_all_app_store_versions_for_an_app
-   - Version localizations: https://developer.apple.com/documentation/appstoreconnectapi/app_store_version_localizations
-   - Modify localization: https://developer.apple.com/documentation/appstoreconnectapi/modify_an_app_store_version_localization
-   - Review detail: https://developer.apple.com/documentation/appstoreconnectapi/app_store_review_details
-2. Confirm HTTP method, path, JWT (`iss` / `kid` / `aud: appstoreconnect-v1`), and field names.
-3. Apply recipes in [api-constraints.md](api-constraints.md) and [scaffold.md](scaffold.md).
-
-If docs and this skill disagree, **prefer live Apple docs**, then update the
-skill notes.
-
-Use `WebFetch` / `WebSearch` in the same turn you scaffold or edit API code.
+Before changing client code, fetch Apple docs (list apps, versions, localizations,
+review details, subscriptions, age rating declarations, app price schedules).
+JWT: `aud: appstoreconnect-v1`. Prefer live docs over this skill if they disagree.
 
 ## Workflow
 
 ```
 Task Progress:
-- [ ] 1. Locate ASC API key (.p8) + Issuer ID + Key ID for the **correct team**
-- [ ] 2. Set ASC_BUNDLE_ID (+ ASC_TEAM_ID); scaffold scripts/app-store-connect
-- [ ] 3. pnpm auth:check — confirm expected apps appear
-- [ ] 4. If app missing: POST bundleIds if needed → **Console New App** → app:resolve → ASC_APP_APPLE_ID
-- [ ] 5. IAP: subscriptionGroups + subscriptions; consumables via POST /v2/inAppPurchases; EN/TR locs
-- [ ] 6. Console: pricing + Ready to Submit; Paid Apps agreement
-- [ ] 7. Fill metadata-catalog.mjs; upsert (omit whatsNew on first version if STATE_ERROR)
-- [ ] 8. RC: create-app app_store + attach SKUs (rc-launchpad); paste ASC credentials in RC dashboard
-- [ ] 9. Binary: eas submit / Transporter
+- [ ] 1. Correct-team ASC key (.p8) + ASC_BUNDLE_ID (+ ASC_TEAM_ID)
+- [ ] 2. Scaffold scripts/app-store-connect; pnpm auth:check
+- [ ] 3. App missing → bundleIds → Console New App → app:resolve → ASC_APP_APPLE_ID
+- [ ] 4. App Information forms (category, content rights, age rating, free price, privacyPolicyUrl)
+- [ ] 5. IAP: group + subs + consumables + EN/TR + group locs + availability + prices/equalizations
+- [ ] 6. Ask user for paywall screenshots → upload review shots + real reviewNotes
+- [ ] 7. metadata-catalog + upsert (omit whatsNew on first version if STATE_ERROR)
+- [ ] 8. RC: create-app app_store + SKUs (rc-launchpad); ASC credentials in RC dashboard
+- [ ] 9. EAS iOS credentials (interactive once) → eas build → eas submit (upload only)
+- [ ] 10. User: App Privacy practices + listing screenshots → Submit for Review only if asked
 ```
+
+## App Information forms (“Unable to Add for Review”)
+
+When ASC shows **Unable to Add for Review**, clear what the API allows **before**
+asking the user to click. Full recipes: [review-forms.md](review-forms.md).
+
+| Blocker | Agent action |
+| --- | --- |
+| Primary Category | `PATCH /v1/appInfos/{id}` → `primaryCategory` (e.g. `PRODUCTIVITY`) |
+| Content Rights | `PATCH /v1/apps/{id}` → `contentRightsDeclaration` (`DOES_NOT_USE_THIRD_PARTY_CONTENT` or `USES_THIRD_PARTY_CONTENT`) |
+| Age Ratings | `PATCH /v1/ageRatingDeclarations/{id}` — fill **all required** attrs (booleans vs enums; see review-forms) |
+| Price Tier | `POST /v1/appPriceSchedules` with USA **$0** `appPricePoint` for free apps |
+| Privacy Policy URL | `PATCH` each `appInfoLocalizations` → `privacyPolicyUrl` (canonical `https://voysapps.io/app/<slug>/privacy-policy`) |
+| Privacy Practices | **Console** App Privacy — open URL; agent cannot complete nutrition labels via API |
+| Build | `eas credentials -p ios` (interactive if unset) → `eas build -p ios` → `eas submit -p ios --latest` |
+| Screenshots | Leave to user / store-assets — **do not** invent listing art unless asked |
+
+**Never** click / API-submit **Submit for Review** unless the user explicitly asks.
 
 ## IAP / subscriptions (API + handoff)
 
-Reverse-DNS IDs shared with Play when possible (`com.<co>.<app>.pro.monthly`, `.credits10k`, …).
+Reverse-DNS IDs shared with Play when possible.
 
 | Step | API | Notes |
 | --- | --- | --- |
-| Group | `POST /v1/subscriptionGroups` | `referenceName` e.g. `Pro` |
-| Auto-renewable | `POST /v1/subscriptions` | `productId`, `subscriptionPeriod` (`ONE_MONTH` / `ONE_YEAR`) |
-| Sub localization | `POST /v1/subscriptionLocalizations` | `en-US`, `tr`, … |
-| Consumable | `POST /v2/inAppPurchases` | `/v1/inAppPurchases` CREATE is **403** |
+| Group | `POST /v1/subscriptionGroups` | e.g. `Pro` |
+| Group localization | `POST /v1/subscriptionGroupLocalizations` | `name` + optional `customAppName`; locales `en-US`, `tr` — empty “Localization / Create” on group page blocks polish |
+| Auto-renewable | `POST /v1/subscriptions` | `ONE_MONTH` / `ONE_YEAR` |
+| Sub localization | `POST /v1/subscriptionLocalizations` | EN/TR; description ≤55 |
+| Consumable | `POST /v2/inAppPurchases` | `/v1` CREATE **403** |
 | IAP localization | `POST /v1/inAppPurchaseLocalizations` | relate `inAppPurchaseV2` |
-| Price / submit | Console | Agent opens Monetization URLs |
+| Sub availability | `POST /v1/subscriptionAvailabilities` | all territories + `availableInNewTerritories: true` |
+| Sub prices | `POST /v1/subscriptionPrices` + equalizations | USA base then **every** equalization — missing territories → `MISSING_METADATA`; Console may look empty until refresh / full equalize |
+| IAP availability | `POST /v1/inAppPurchaseAvailabilities` | required for consumables → Ready to Submit |
+| IAP prices | `POST /v1/inAppPurchasePriceSchedules` | USA base price point |
+| Review note | `PATCH` `reviewNote` | Real how-to + Product ID + prices + grant — **not** “see docs” |
+| Review screenshot | reserve → PUT → PATCH commit | **Ask user** for Pro + credits paywall PNGs; upscale **1290×2796**; tiny exports → `IMAGE_INCORRECT_DIMENSIONS`; `DELETE` FAILED then retry |
+| Ready to Submit | Poll `state` | Target `READY_TO_SUBMIT` |
 
-Then register the same `store_identifier`s in RevenueCat (**rc-launchpad**) and attach to packages.
+Then **rc-launchpad**: same `store_identifier`s → packages + entitlement.
 
 ## Credentials (never paste secrets into chat)
 
 | Variable / path | Purpose |
 | --- | --- |
-| `ASC_ISSUER_ID` | Integrations page Issuer UUID |
-| `ASC_KEY_ID` | API Key ID |
-| `ASC_PRIVATE_KEY` | PEM string (EAS secret / `env:pull`) |
-| `ASC_PRIVATE_KEY_PATH` | Absolute path to `.p8` (local file) |
-| `scripts/app-store-connect/secrets/AuthKey_XXXXX.p8` | Local convention (gitignored) |
-| `ASC_BUNDLE_ID` | e.g. `com.example.yourapp` |
-| `ASC_APP_APPLE_ID` | Optional numeric App Store Connect Apple ID |
-| `ASC_TEAM_ID` | Optional Apple Developer Team ID (multi-membership clarity) |
-| `ASC_VERSION` | Optional marketing version string (e.g. `1.3.1`); else editable latest |
+| `ASC_ISSUER_ID` / `ASC_KEY_ID` / `ASC_PRIVATE_KEY` or `_PATH` / `secrets/AuthKey_*.p8` | JWT |
+| `ASC_BUNDLE_ID` / `ASC_APP_APPLE_ID` / `ASC_TEAM_ID` / `ASC_VERSION` | Targeting |
 
-Create key: App Store Connect → **Users and Access → Integrations → App Store
-Connect API → Generate API Key** (role **Admin** or **App Manager**). Download
-`.p8` once — Apple will not show it again.
+Push Issuer / Key ID / PEM to EAS env (`secret` for PEM). Never commit `.p8`.
 
-**Not required for this skill:** Apple ID password, app-specific password
-(those are for Transporter / altool Apple-ID login only).
+### EAS iOS build credentials
 
-**Team sharing:** 1Password / Bitwarden shared vault — **never** git, Slack, or Notion.
+Non-interactive `eas build -p ios` fails with **Credentials are not set up** until
+Distribution Cert + App Store profile exist. Agent should:
 
-### EAS project env (recommended)
-
-Push the same vars to Expo EAS so agents / CI can `eas env:pull` without
-committing `.p8`. Use **absolute** `ASC_PRIVATE_KEY_PATH` locally; on EAS store
-the PEM as **`ASC_PRIVATE_KEY`** (`secret` visibility).
-
-| Var | EAS visibility |
-| --- | --- |
-| `ASC_ISSUER_ID` | sensitive |
-| `ASC_KEY_ID` | sensitive |
-| `ASC_PRIVATE_KEY` | secret |
-| `ASC_BUNDLE_ID` | plaintext |
-| `ASC_TEAM_ID` | plaintext |
-| `ASC_APP_APPLE_ID` | plaintext (optional) |
-
-```bash
-# example — never echo PEM into chat/logs
-eas env:create --name ASC_ISSUER_ID --value "$ASC_ISSUER_ID" \
-  --visibility sensitive --environment production --non-interactive
-eas env:create --name ASC_PRIVATE_KEY --value "$(cat AuthKey_XXXXX.p8)" \
-  --visibility secret --environment production --non-interactive
-```
-
-Repeat for `preview` / `development` as needed. Do **not** commit real Issuer,
-Key ID, or PEM into this skill repo or app git history.
+1. Tell user to run `eas credentials -p ios` once (interactive), **or**
+2. Run it if the session can complete interactive approval
+3. Then `EAS_BUILD_NO_EXPO_GO_WARNING=true eas build -p ios --profile production`
+4. `eas submit -p ios --latest` → ASC processing only (**not** App Review)
 
 ## Repo convention
 
 ```
 scripts/app-store-connect/
-  package.json          # jose, type: module
-  secrets/              # gitignored .p8 + README
-  src/
-    client.mjs          # JWT + fetch wrapper
-    metadata-catalog.mjs # locales + REVIEW (project-specific)
-    auth-check.mjs
-    resolve-app.mjs
-    upsert-version-localizations.mjs
+  package.json
+  secrets/              # gitignored .p8
+  src/client.mjs
+  src/metadata-catalog.mjs
+  src/auth-check.mjs
+  src/resolve-app.mjs
+  src/upsert-version-localizations.mjs
 ```
-
-Scaffold with [scaffold.md](scaffold.md) when missing. Keep **project-specific**
-copy in `metadata-catalog.mjs` only — skill logic stays generic.
-
-### Suggested pnpm scripts
-
-```json
-{
-  "auth:check": "node ./src/auth-check.mjs",
-  "app:resolve": "node ./src/resolve-app.mjs",
-  "metadata:upsert": "node ./src/upsert-version-localizations.mjs"
-}
-```
-
-## Binary upload (v1 — document only)
-
-IPA delivery is **out of band** for v1 scripts:
-
-```bash
-# Preferred for Expo
-eas submit -p ios --path ./build.ipa
-
-# Or Apple Transporter (GUI) with the correct provider / team
-```
-
-If Transporter returns `409` *`'NNNN' is not a valid ID for this relationship`*:
-the IPA is often fine — ASC app ID / provider / agreements mismatch. See
-[api-constraints.md](api-constraints.md). Fix ASC access, then retry the same IPA.
 
 ## Hard rules
 
-1. **Never commit** `.p8`, Issuer/Key IDs in public chats, or real demo passwords
-   in committed catalogs — use placeholders in the template; real values only in
-   gitignored local overrides or env.
-2. **Locale codes** must match ASC (`en-US`, `tr`, `es-ES`, `de-DE`, `zh-Hant`,
-   `fr-FR`, `ar-SA`, …) — not arbitrary BCP-47 guesses. See api-constraints.
-3. **Character limits** (Unicode code points): promotionalText ≤170, whatsNew ≤4000,
-   description ≤4000, keywords ≤100, subtitle ≤30 (app info localization — future).
-4. **Editable state:** `whatsNew` / description usually need a version in an
-   editable state. **First version** often rejects `whatsNew` (`STATE_ERROR`) —
-   omit it and set description / promotionalText / keywords only.
-5. **gitignore** `**/secrets/**` except `secrets/README.md`; ignore `*.p8`.
-6. Prefer **pnpm** (`pnpm install`, `pnpm <script>`) — not npm.
-7. **Never** assume one team key sees all Voys apps — run `auth:check` and switch
-   Issuer/Key when apps are missing.
-8. **`POST /v1/apps` CREATE is forbidden** — New App is always a Console handoff.
+1. Never commit `.p8` / real demo passwords.
+2. ASC locale codes exactly (`en-US`, `tr`, …).
+3. Character limits: promotionalText ≤170, whatsNew/description ≤4000, keywords ≤100.
+4. First version: omit `whatsNew` if `STATE_ERROR`.
+5. Prefer **pnpm**.
+6. Never assume one team key sees all apps — `auth:check`.
+7. `POST /v1/apps` CREATE forbidden.
+8. **Never Submit for Review** unless the user explicitly asks.
+9. Console-only: New App, Paid Apps agreement accept, **App Privacy practices**, listing screenshot upload (until API deepen).
 
 ## Quick commands
 
 ```bash
 cd scripts/app-store-connect && pnpm install
-export ASC_ISSUER_ID=... ASC_KEY_ID=... ASC_BUNDLE_ID=com.example.yourapp
-# put AuthKey_XXXXX.p8 under secrets/
-pnpm auth:check
-pnpm app:resolve
-pnpm metadata:upsert -- --dry-run
-pnpm metadata:upsert
+pnpm auth:check && pnpm app:resolve
+pnpm metadata:upsert -- --dry-run && pnpm metadata:upsert
 ```
-
-Pass `--version=1.3.1` to target a marketing version. After mutations, re-fetch
-localizations and report locales + truncated what’s new.
 
 ## Additional resources
 
+- Review form recipes: [review-forms.md](./review-forms.md)
 - Hard API traps: [api-constraints.md](./api-constraints.md)
-- Scaffold checklist: [scaffold.md](./scaffold.md)
-- Example flows: [examples.md](./examples.md)
-- Click handoffs (agreements / API key UI): [../firebase-launchpad/handoffs.md](../firebase-launchpad/handoffs.md)
+- Scaffold: [scaffold.md](./scaffold.md)
+- Examples: [examples.md](./examples.md)
+- Click handoffs: [../firebase-launchpad/handoffs.md](../firebase-launchpad/handoffs.md)

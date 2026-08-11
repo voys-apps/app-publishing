@@ -4,142 +4,109 @@
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| `401` / `NOT_AUTHORIZED` | Bad Issuer, Key ID, or `.p8` | Regenerate key; confirm `ASC_ISSUER_ID` + `ASC_KEY_ID` match the downloaded key |
-| `403` on apps | Key role too weak or app not in team | Use **Admin** or **App Manager**; confirm provider/team |
-| JWT rejected | Wrong `aud` or expired token | `aud` must be `appstoreconnect-v1`; tokens ~20 min max |
-
-JWT header/payload (ES256):
+| `401` / `NOT_AUTHORIZED` | Bad Issuer, Key ID, or `.p8` | Regenerate key; confirm `ASC_ISSUER_ID` + `ASC_KEY_ID` |
+| `403` on apps | Weak role / wrong team | Admin or App Manager; correct provider |
+| JWT rejected | Wrong `aud` or expired | `aud` must be `appstoreconnect-v1`; ~20 min |
 
 ```json
 { "alg": "ES256", "kid": "<ASC_KEY_ID>", "typ": "JWT" }
 { "iss": "<ASC_ISSUER_ID>", "iat": <unix>, "exp": <iat+1200>, "aud": "appstoreconnect-v1" }
 ```
 
-Sign with the `.p8` private key. Base URL: `https://api.appstoreconnect.apple.com`.
+Base URL: `https://api.appstoreconnect.apple.com`.
 
 ## Bundle IDs & app create
 
 | Action | Endpoint | Result |
 | --- | --- | --- |
-| Create bundle | `POST /v1/bundleIds` | `platform`: `IOS` \| `MAC_OS` \| `UNIVERSAL` only — **not** `SERVICES` |
-| List apps | `GET /v1/apps` | Scoped to the API key’s team |
-| Create app | `POST /v1/apps` | **403** — resource does not allow CREATE → Console New App |
+| Create bundle | `POST /v1/bundleIds` | `IOS` \| `MAC_OS` \| `UNIVERSAL` — **not** `SERVICES` |
+| List apps | `GET /v1/apps` | Scoped to key’s team |
+| Create app | `POST /v1/apps` | **403** → Console New App |
 
-After Console create: `pnpm app:resolve` → persist `ASC_APP_APPLE_ID`.
+Then `pnpm app:resolve` → `ASC_APP_APPLE_ID`.
+
+## App Information forms
+
+See [review-forms.md](review-forms.md).
+
+| Action | Endpoint |
+| --- | --- |
+| Content rights | `PATCH /v1/apps/{id}` `contentRightsDeclaration` |
+| Category | `PATCH /v1/appInfos/{id}` relationships `primaryCategory` / `secondaryCategory` |
+| Age rating | `PATCH /v1/ageRatingDeclarations/{id}` (GET_INSTANCE often 403) |
+| Privacy Policy URL | `PATCH /v1/appInfoLocalizations/{id}` `privacyPolicyUrl` |
+| Free / paid app price | `POST /v1/appPriceSchedules` + USA `appPricePoints` |
+| App Privacy practices | **Console only** |
 
 ## IAP
 
 | Action | Endpoint |
 | --- | --- |
 | Subscription group | `POST /v1/subscriptionGroups` |
+| Group localization | `POST /v1/subscriptionGroupLocalizations` |
 | Subscription | `POST /v1/subscriptions` |
-| Subscription localization | `POST /v1/subscriptionLocalizations` |
-| Consumable create | `POST /v2/inAppPurchases` (`/v1/inAppPurchases` CREATE forbidden) |
+| Sub localization | `POST /v1/subscriptionLocalizations` |
+| Consumable create | `POST /v2/inAppPurchases` |
 | Consumable localization | `POST /v1/inAppPurchaseLocalizations` |
+| Sub availability | `POST /v1/subscriptionAvailabilities` |
+| Sub prices | `POST /v1/subscriptionPrices` + `GET .../equalizations` loop |
+| IAP availability | `POST /v1/inAppPurchaseAvailabilities` |
+| IAP prices | `POST /v1/inAppPurchasePriceSchedules` |
 
-Pricing and “Ready to Submit” remain Console handoffs. Paid Apps agreement must be active.
+Paid Apps agreement must be active. Poll product `state` until `READY_TO_SUBMIT`.
+Missing equalization territories or IAP availability → stuck `MISSING_METADATA`.
 
-## Review detail
+### IAP review screenshot + notes
 
-`POST /v1/appStoreReviewDetails` requires `contactPhone` like `+90 532 000 0000` (plus country code + spaces).
+| Action | Endpoint |
+| --- | --- |
+| Sub review note | `PATCH /v1/subscriptions/{id}` `reviewNote` |
+| Sub review screenshot | `POST /v1/subscriptionAppStoreReviewScreenshots` → PUT → `PATCH` commit |
+| Consumable review note | `PATCH` inAppPurchase `reviewNote` |
+| Consumable review screenshot | `POST /v1/inAppPurchaseAppStoreReviewScreenshots` (relate `inAppPurchaseV2`) |
+
+`fileSize` = JSON **number**. Poll `assetDeliveryState` without mixing unrelated
+`fields[...]` types. `IMAGE_INCORRECT_DIMENSIONS` → upscale ~1290×2796, `DELETE`
+FAILED, re-reserve. **Ask the user** for Pro + credits paywall screenshots.
+
+## Review detail (version)
+
+`POST` / `PATCH` `appStoreReviewDetails` — `contactPhone` like `+90 532 000 0000`.
 
 ## App resolve
 
 | Approach | Endpoint |
 | --- | --- |
-| By bundle ID | `GET /v1/apps?filter[bundleId]=com.example.app` |
-| By numeric Apple ID | `GET /v1/apps/{id}` — `id` is the ASC resource id (often the same numeric Apple ID string) |
+| Bundle ID | `GET /v1/apps?filter[bundleId]=…` |
+| Numeric Apple ID | `GET /v1/apps/{id}` |
 
-Mismatch between Transporter’s relationship ID and ASC App Information Apple ID
-→ upload `409 ENTITY_ERROR.RELATIONSHIP.INVALID` (`'NNNN' is not a valid ID for
-this relationship`). Usually **not** a bad IPA: wrong provider, deleted/recreated
-app record, pending agreements, or stale Transporter mapping. Verify
-`pnpm app:resolve` against App Information → Apple ID.
+Transporter `409` relationship invalid → wrong provider / stale app ID / agreements,
+not a bad IPA first. Re-`app:resolve`.
 
-## Versions
+## Versions & localizations
 
-| Filter | Notes |
-| --- | --- |
-| `filter[platform]=IOS` | Always scope iOS |
-| `filter[versionString]=1.3.1` | Target marketing version |
-| Prefer editable states | e.g. `PREPARE_FOR_SUBMISSION`, `DEVELOPER_REJECTED`, `REJECTED` when updating what’s new |
+Prefer editable states (`PREPARE_FOR_SUBMISSION`, …). First version: omit `whatsNew`
+if `STATE_ERROR`.
 
-List: `GET /v1/apps/{id}/appStoreVersions?filter[platform]=IOS`
-
-If no editable version exists, tell the user to create version **X.Y.Z** in ASC
-(or via API create version — not in v1 template).
-
-## Version localizations
-
-| Method | Path |
-| --- | --- |
-| List | `GET /v1/appStoreVersions/{id}/appStoreVersionLocalizations` |
-| Create | `POST /v1/appStoreVersionLocalizations` (+ relationship to version) |
-| Patch | `PATCH /v1/appStoreVersionLocalizations/{id}` |
-
-Attributes (partial PATCH preserves omitted fields):
-
-- `whatsNew`
-- `promotionalText`
-- `description`
-- `keywords`
-- `supportUrl`
-- `marketingUrl`
-- `locale` (create only)
-
-### Limits (Unicode code points)
-
-| Field | Max |
+| Field | Max (code points) |
 | --- | --- |
 | `promotionalText` | 170 |
-| `whatsNew` | 4000 |
-| `description` | 4000 |
+| `whatsNew` / `description` | 4000 |
 | `keywords` | 100 |
 
-`promotionalText` is often editable even when the app is live; `whatsNew` /
-`description` usually need an editable version state.
-
-## Locales (common Voys set)
-
-Use ASC locale identifiers exactly:
-
-| Locale | Notes |
-| --- | --- |
-| `en-US` | Primary English |
-| `tr` | Turkish |
-| `es-ES` | Spanish (Spain) |
-| `de-DE` | German |
-| `fr-FR` | French |
-| `zh-Hant` | Chinese Traditional |
-| `ar-SA` | Arabic |
-
-Do not invent codes like `tr-TR` unless ASC lists them for that app. Prefer
-listing existing localizations first, then create missing ones only when the
-user wants that language added.
-
-## App Review detail
-
-| Method | Path |
-| --- | --- |
-| Get | `GET /v1/appStoreVersions/{id}/appStoreReviewDetail` |
-| Patch | `PATCH /v1/appStoreReviewDetails/{id}` |
-
-Useful attributes: `notes`, `demoAccountName`, `demoAccountPassword`,
-`demoAccountRequired`, contact fields.
-
-Never commit real demo passwords; keep in local catalog / env.
+Locales: `en-US`, `tr`, `es-ES`, `de-DE`, `fr-FR`, `zh-Hant`, `ar-SA` — list first.
 
 ## Rate limits / errors
 
-- ASC returns JSON:API errors with `status`, `code`, `title`, `detail`.
-- On `409` relationship invalid during **binary** upload: check app ID + agreements,
-  not version string format first (still avoid non-numeric build quirks).
-- Retry transient `429` / `5xx` with backoff; do not hammer list endpoints.
+JSON:API `status` / `code` / `detail`. Retry `429` / `5xx` with backoff.
+Age rating `409 ATTRIBUTE.REQUIRED` → add the named field (correct JSON type) and retry.
+Age rating `409 ATTRIBUTE.TYPE` → boolean vs string mismatch.
 
-## Out of scope (v1)
+## Out of scope / Console
 
-- Screenshot / preview set upload
-- IAP / subscription catalog (use RevenueCat + store; ASC IAP later)
-- IPA upload via API (use `eas submit` / Transporter)
-- App Info localizations (`name` / `subtitle`) — future extension on
-  `appInfoLocalizations`
+- App Privacy **practices** (nutrition labels)
+- New App create
+- Paid Apps agreement **accept** click
+- Listing screenshot/preview sets (deepen later)
+- Submit for Review (explicit user ask only)
+- IPA bytes via ASC API (use `eas submit` / Transporter)

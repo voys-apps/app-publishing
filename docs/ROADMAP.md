@@ -21,7 +21,7 @@ This repo should stay **store + monetization + Firebase provision + release auto
 | Piece | Role |
 | --- | --- |
 | `play-launchpad` | Play listing, IAP/subs, assets upload, closed testing, local AAB CI |
-| `apc-launchpad` | ASC: metadata, bundleIds, subscriptionGroups/subscriptions, consumables via `/v2/inAppPurchases`; New App + pricing Console |
+| `apc-launchpad` | ASC: metadata, IAP (prices/availability/review shots), app forms (category/age/content rights/free price), review-forms.md; New App + App Privacy practices Console |
 | `rc-launchpad` | Catalog + Hosted UI + **credits-bridge** (RTDN + Supabase webhook) |
 | `store-assets` | **Priority** — generate + exact-size QA (512 / 1024×500 / screenshots); upload via play-launchpad |
 | `firebase-launchpad` | Firebase apps, configs, Analytics handoff, FCM → EAS |
@@ -44,12 +44,13 @@ Do **not** start these unless the user asks. Track here only.
 | Status | Skill / item | Notes |
 | --- | --- | --- |
 | TODO | `eas-ship` | Local-first release contract (`.easignore`, version bump, no cloud default) — some of this already lives in `play-launchpad/local-android-ci.md` |
-| TODO | `apc-launchpad` deepen | Screenshots / preview sets, appInfoLocalizations (name/subtitle), price-point API, IPA upload helper |
+| TODO | `apc-launchpad` deepen | Listing screenshot/preview set upload; appInfo name/subtitle polish; IPA attach helper |
 | DONE | `apc-launchpad` IAP scaffold | subscriptionGroups + subscriptions + `/v2/inAppPurchases`; multi-team key note |
+| DONE | `apc-launchpad` review forms | category, content rights, age rating, free `appPriceSchedules`, privacyPolicyUrl, IAP availability/prices/review shots; `review-forms.md` |
+| TODO | Privacy / Terms / Support URL checklist | partially covered in apc `privacyPolicyUrl` + `/app/<slug>` pattern — still want shared checklist skill |
 | DONE | `auth-launchpad` Apple | SIWA capability API + Services ID/key Console handoff |
 | TODO | `release-checklist` | Week-1 new-app walkthrough checklist |
 | TODO | Data Safety builder | Verified answers only → CSV/API |
-| TODO | Privacy / Terms / Support URL checklist | `voysapps.io/app/…` pattern |
 | TODO | Unit economics / pricing sheet template | Forkable `UNIT_ECONOMICS.md` |
 | TODO | Multi-app inventory (`apps.yaml`) | Optional internal |
 | TODO | Monitoring (RC charts / Play vitals) | Later |
@@ -69,7 +70,7 @@ Do **not** start these unless the user asks. Track here only.
 ```text
 skills/
   play-launchpad/          # shipped
-  apc-launchpad/           # shipped — ASC metadata v1
+  apc-launchpad/           # shipped — ASC metadata + IAP + review-forms
   rc-launchpad/            # shipped — catalog + paywall + credits-bridge
   store-assets/            # shipped — generation + sizes
   firebase-launchpad/      # shipped
