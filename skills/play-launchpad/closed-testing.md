@@ -41,22 +41,35 @@ Do **not** assume `receezy@googlegroups.com` is the default for `alpha` — pass
 Open: `https://groups.google.com/my-groups`  
 Play track (Console handoff if needed): Testing → Closed testing / Alpha → Testers
 
-## Reddit post (tester recruit)
+## Reddit post (tester recruit) — optional, open compose via query params
 
 **Optional — only if the user asks** (or says yes after you propose it during closed testing).
-Draft in chat + save `docs/reddit-closed-testing-post.txt` — **do not post** until user says to publish.
+Do **not** auto-post. Default flow: draft → save file → **open prefilled Reddit compose** → user clicks Submit.
 
-Prefer the Voys / r/AndroidClosedTesting style (same shape as Words Journey / QuickDoc):
+### Default subreddit
+
+**`r/TestersCommunity`** unless the user names another (e.g. r/AndroidClosedTesting).
+
+### Day-N updates (14-day Play rule)
+
+When Play Console shows continuous opt-in progress (e.g. “12 testers … for N days”), rewrite the post as a **Day N/14** update:
+
+- Keep links + mutual-testing offer
+- State current count + days continuous + days remaining
+- Ask for **extra opt-ins as buffer** so the 12-for-14 streak does not drop
+- Save to `docs/reddit-closed-testing-post.txt` in the app repo
+
+### Template
 
 ```text
 TITLE:
-[Closed Testing] {AppName} — Need testers for {one-line pitch} (mutual testing welcome)
+[Closed Testing] {AppName} — Day {N}/14: Need testers to keep the Play closed track alive (mutual testing welcome)
 
 BODY:
 Testers Needed
 Hi everyone,
 
-Looking for **testers** for **{AppName}**, an Android closed beta on Google Play. I need to hit the minimum tester count to keep the closed track active. Please help if you can!
+**Day {N} update** — Google Play needs **at least 12 testers opted in for 14 continuous days**. We're currently at **{count} testers for {N} days**, so we still need **{14-N} more days** without dropping below 12. Extra opt-ins are a huge help as a buffer if anyone leaves.
 
 **What it does:** {1–2 sentences: core loop / value}
 
@@ -70,13 +83,48 @@ Web link: https://play.google.com/apps/testing/{packageName}
 
 **Mutual testing:** Happy to test your app in return — just drop your Play link or Google Group in the comments and I'll opt in.
 
-If you're up for it, I'd really appreciate the help. Feedback (bugs, UX, crashes{, sign-in, paywall}) is very welcome. Thanks!
+If you can opt in (and leave the tester membership on), I'd really appreciate it. Feedback (bugs, UX, crashes{, sign-in, paywall}) is very welcome. Thanks!
 ```
 
-Fill from live Play state when known: group email/slug, packageName, optional Day N / “N spots left”.
-App-specific example: `docs/reddit-closed-testing-post.txt` (QuickDoc).
+First-recruit (no day counter yet) may omit Day N and use “Need testers for {pitch}” in the title.
 
-Post target: prefer a testers / Android beta community the user names (e.g. r/AndroidClosedTesting or a Voys-owned sub). Agent may open Reddit compose URL after approval; user clicks Submit unless they explicitly ask the agent to post via API/tooling.
+### Open Reddit compose (query params) — “şak diye aç”
+
+After the user asks to open / publish draft:
+
+1. Parse `docs/reddit-closed-testing-post.txt` → `TITLE:` line + `BODY:` block (everything after `BODY:`).
+2. Build:
+
+```text
+https://www.reddit.com/r/{sub}/submit?title={encodeURIComponent(title)}&text={encodeURIComponent(body)}
+```
+
+Default `{sub}` = `TestersCommunity`.
+
+3. Open in the browser (macOS: `open "<url>"`). Print the same URL in chat.
+4. User reviews flair / rules and clicks **Post**. Agent does **not** submit via Reddit API unless the user explicitly asks.
+
+Shell one-liner (from app repo, after the txt exists):
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+from urllib.parse import quote
+import subprocess, re, sys
+
+raw = Path("docs/reddit-closed-testing-post.txt").read_text()
+m = re.search(r"(?ms)^TITLE:\s*(.+?)\n\s*\nBODY:\s*\n(.*)\Z", raw.strip() + "\n")
+if not m:
+    sys.exit("Could not parse TITLE/BODY from docs/reddit-closed-testing-post.txt")
+title, body = m.group(1).strip(), m.group(2).strip()
+sub = "TestersCommunity"  # override if user named another
+url = f"https://www.reddit.com/r/{sub}/submit?title={quote(title)}&text={quote(body)}"
+print(url)
+subprocess.run(["open", url], check=False)
+PY
+```
+
+If the URL is extremely long and the browser truncates, fall back to: open `https://www.reddit.com/r/{sub}/submit`, paste title/body from the txt (still no auto-submit).
 
 ## API verify checklist
 

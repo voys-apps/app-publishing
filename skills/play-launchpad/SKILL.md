@@ -4,12 +4,13 @@ description: >-
   Automate Google Play Console via Android Publisher API: service-account
   auth, store listings EN/TR, icons/feature graphics/screenshots, one-time
   products and subscriptions (monetization APIs), closed testing tracks with
-  Google Groups and Reddit tester-recruit handoffs (ask before create/post),
+  Google Groups and optional Reddit tester-recruit handoffs (ask before
+  create/post; open r/TestersCommunity compose via title/text query params),
   and local AAB release drafts. Use when the user mentions Play Console, Play
   Store listing, closed testing, Google Play IAP, Android Publisher API,
-  feature graphic upload, tester Google Group, Reddit closed test post, or
-  wants to avoid manual Play forms / Playwright for Play setup. Works in any
-  Android/React Native/Expo repo.
+  feature graphic upload, tester Google Group, Reddit closed test post,
+  TestersCommunity, or wants to avoid manual Play forms / Playwright for Play
+  setup. Works in any Android/React Native/Expo repo.
 ---
 
 # Play Launchpad
@@ -43,6 +44,7 @@ against live Google docs when writing or changing client code.
 | Icon / feature graphic / screenshots | `edits.images` (upload media) |
 | Local AAB publish | **Local first** — `pnpm build:android` + `testing:upload-aab`; never cloud unless asked — [local-android-ci.md](./local-android-ci.md) |
 | Closed testing + Google Group | existing **`alpha`**; never **`receezy*`**; never `tracks.create` — [closed-testing.md](./closed-testing.md) |
+| Optional Reddit recruit | **only if asked** → draft `docs/reddit-closed-testing-post.txt` → open `r/TestersCommunity` submit URL (`title` + `text` query params) — [closed-testing.md](./closed-testing.md) |
 | Data Safety CSV | `applications.dataSafety` (only with verified answers) |
 | Store listing graphics (icon / feature / screenshots) | **[`store-assets`](../store-assets/SKILL.md)** first (generate + size QA) → then this skill’s `listing:upload-assets` |
 

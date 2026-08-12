@@ -56,3 +56,12 @@ User: “RC Pub/Sub hatası / RTDN”
 1. Confirm SA JSON is Owner on `project_id`.
 2. Run app helper (or Service Usage + IAM + topic create via SA).
 3. Hand Topic ID to user for Play Monetization setup paste (API cannot).
+
+## Example G — Reddit closed-testing recruit (optional)
+
+User: “Day 6 oldu, r/TestersCommunity’ye post aç” / “Reddit post query params ile aç”
+
+1. Confirm optional Reddit recruit is requested (do not invent a post unprompted).
+2. Write/update `docs/reddit-closed-testing-post.txt` with Day N/14 copy from Play status.
+3. Build `https://www.reddit.com/r/TestersCommunity/submit?title=…&text=…` and `open` it.
+4. User clicks Post — see [closed-testing.md](./closed-testing.md) “Open Reddit compose”.
