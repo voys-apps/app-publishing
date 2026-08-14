@@ -77,7 +77,7 @@ User: “ASC’de app açtım; abonelik + RC + metadata”
 5. Ask user for Pro + credits paywall screenshots → review shots + notes → `READY_TO_SUBMIT`.
 6. `rc-launchpad`: `create-app` `app_store` + SKUs + packages; RC dashboard ASC credentials.
 7. Metadata upsert (omit `whatsNew` on first version if STATE_ERROR).
-8. User: App Privacy practices + listing screenshots; `eas credentials` → build → `eas submit` (upload only).
+8. User: App Privacy practices + listing screenshots; `eas credentials` → **`pnpm build:ios`** (local). `eas submit` only if they ask.
 9. **Do not** Submit for Review unless asked.
 
 ## Example H — Unable to Add for Review
@@ -86,7 +86,7 @@ User pastes ASC red box (category, age rating, content rights, price, privacy, b
 
 1. Fix all API-capable rows from [review-forms.md](review-forms.md) in one pass.
 2. Open App Privacy URL for practices (Console).
-3. Build: if EAS says credentials not set up → user runs `eas credentials -p ios`, then agent builds/submits to ASC.
+3. Build: if EAS says credentials not set up → user runs `eas credentials -p ios`, then agent **`pnpm build:ios`** (local). Do not cloud-build or `eas submit` unless asked.
 4. Screenshots: leave to user unless they ask for store-assets.
 5. Confirm remaining blockers; never submit for review unbidden.
 

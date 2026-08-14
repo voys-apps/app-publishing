@@ -237,13 +237,15 @@ POST /v1/subscriptionGroupLocalizations
 Console “Subscription Prices” may look empty while API already has prices —
 hard-refresh; verify with `GET .../prices?filter[territory]=USA`.
 
-## Build / submit (upload only)
+## Build / submit (local IPA; upload only if asked)
 
 ```bash
 eas credentials -p ios          # once if non-interactive build fails
-eas build -p ios --profile production
-eas submit -p ios --latest      # → ASC; NOT App Review
+pnpm build:ios                  # eas build -p ios --profile production --local
+# pnpm submit:ios               # ONLY if the user asks — ASC / TestFlight, NOT App Review
 ```
+
+Never EAS cloud (`build:ios:cloud`) unless the user asks. See [local-ios-ci.md](./local-ios-ci.md).
 
 Attach processed build on the version in Console (or via API relationship) when
 ready. **Submit for Review** only on explicit user request.

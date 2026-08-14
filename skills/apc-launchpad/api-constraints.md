@@ -111,4 +111,4 @@ Age rating `409 ATTRIBUTE.TYPE` → boolean vs string mismatch.
 - Paid Apps agreement **accept** click
 - Listing screenshot/preview sets (deepen later)
 - Submit for Review (explicit user ask only)
-- IPA bytes via ASC API (use `eas submit` / Transporter)
+- IPA bytes via ASC API (local `pnpm build:ios`; upload with Transporter / `eas submit` **only if the user asks**)

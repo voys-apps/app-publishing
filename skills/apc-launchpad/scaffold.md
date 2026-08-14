@@ -103,5 +103,5 @@ export ASC_TEAM_ID="XXXXXXXXXX"
 
 ## Binary (no scaffold script in v1)
 
-Document only: `eas submit -p ios` or Transporter. Do not invent altool wrappers
-unless the user asks.
+Local IPA: `pnpm build:ios` (`--local`). Never EAS cloud unless asked.  
+Upload: Transporter or `eas submit` **only if the user asks**. Do not invent altool wrappers.

@@ -7,9 +7,10 @@ description: >-
   content rights / age ratings / free price schedule, version metadata + App Review
   notes, privacyPolicyUrl, app subtitle (≤30). Use when the user mentions App Store Connect, ASC,
   Unable to Add for Review, age rating, content rights, category, subtitle, IAP pricing,
-  What's New, promotional text, eas submit (upload only), or apc-launchpad.
+  What's New, promotional text, local iOS IPA, TestFlight upload, or apc-launchpad.
   Works in any iOS / Expo repo. Pair with play-launchpad, rc-launchpad, store-assets.
-  Never Submit for Review unless the user explicitly asks.
+  Local `--local` builds only unless the user asks for cloud. Never eas submit
+  unless asked. Never Submit for Review unless the user explicitly asks.
 ---
 
 # APC Launchpad
@@ -45,7 +46,8 @@ invent endpoints — confirm against live Apple docs ([api-constraints.md](api-c
 | Version What’s New / promo / description / keywords | `pnpm metadata:upsert` |
 | App Review notes (version) | upsert `REVIEW` (`contactPhone` `+CC …`) |
 | Listing screenshots / previews | User / **store-assets**; upload Console (API deepen later) |
-| IPA upload to ASC | `eas submit` — **does not** submit for review |
+| Local IPA | **Local first** — `pnpm build:ios` (`eas build … --local`); never cloud unless asked — [local-ios-ci.md](./local-ios-ci.md) |
+| IPA upload to ASC / TestFlight | **Only if user asks** — `pnpm submit:ios` / Transporter (not App Review) |
 | Submit for Review | **Only if user explicitly asks** |
 | Play Store | **play-launchpad** |
 
@@ -80,7 +82,7 @@ Task Progress:
 - [ ] 6. Ask user for paywall screenshots → upload review shots + real reviewNotes
 - [ ] 7. metadata-catalog + upsert (omit whatsNew on first version if STATE_ERROR)
 - [ ] 8. RC: create-app app_store + SKUs (rc-launchpad); ASC credentials in RC dashboard
-- [ ] 9. EAS iOS credentials (interactive once) → eas build → eas submit (upload only)
+- [ ] 9. EAS iOS credentials (interactive once) → **local** `pnpm build:ios`. Never cloud unless asked. `eas submit` **only if the user asks** — [local-ios-ci.md](./local-ios-ci.md)
 - [ ] 10. User: App Privacy practices + listing screenshots → Submit for Review only if asked
 ```
 
@@ -98,7 +100,7 @@ asking the user to click. Full recipes: [review-forms.md](review-forms.md).
 | Privacy Policy URL | `PATCH` each `appInfoLocalizations` → `privacyPolicyUrl` (canonical `https://voysapps.io/app/<slug>/privacy-policy`) |
 | Subtitle | `PATCH` each `appInfoLocalizations` → `subtitle` (≤30 code points; EN + TR minimum) |
 | Privacy Practices | **Console** App Privacy — open URL; agent cannot complete nutrition labels via API |
-| Build | `eas credentials -p ios` (interactive if unset) → `eas build -p ios` → `eas submit -p ios --latest` |
+| Build | `eas credentials -p ios` (interactive if unset) → **`pnpm build:ios`** (`--local`). Never cloud / `eas submit` unless asked |
 | Screenshots | Leave to user / store-assets — **do not** invent listing art unless asked |
 
 **Never** click / API-submit **Submit for Review** unless the user explicitly asks.
@@ -134,15 +136,17 @@ Then **rc-launchpad**: same `store_identifier`s → packages + entitlement.
 
 Push Issuer / Key ID / PEM to EAS env (`secret` for PEM). Never commit `.p8`.
 
-### EAS iOS build credentials
+### EAS iOS build credentials (local)
 
-Non-interactive `eas build -p ios` fails with **Credentials are not set up** until
+Non-interactive **local** `pnpm build:ios` fails with **Credentials are not set up** until
 Distribution Cert + App Store profile exist. Agent should:
 
 1. Tell user to run `eas credentials -p ios` once (interactive), **or**
 2. Run it if the session can complete interactive approval
-3. Then `EAS_BUILD_NO_EXPO_GO_WARNING=true eas build -p ios --profile production`
-4. `eas submit -p ios --latest` → ASC processing only (**not** App Review)
+3. Then `EAS_BUILD_NO_EXPO_GO_WARNING=true pnpm build:ios` (`eas build -p ios --profile production --local`)
+4. **Do not** `eas submit` unless the user asks (ASC / TestFlight upload only — **not** App Review)
+
+**Never** `build:ios:cloud` / `eas build` without `--local` unless the user explicitly asks for cloud.
 
 ## Repo convention
 
@@ -167,7 +171,8 @@ scripts/app-store-connect/
 6. Never assume one team key sees all apps — `auth:check`.
 7. `POST /v1/apps` CREATE forbidden.
 8. **Never Submit for Review** unless the user explicitly asks.
-9. Console-only: New App, Paid Apps agreement accept, **App Privacy practices**, listing screenshot upload (until API deepen).
+9. **Local iOS builds only** (`pnpm build:ios` / `--local`). Never EAS cloud unless the user asks. Never `eas submit` unless the user asks.
+10. Console-only: New App, Paid Apps agreement accept, **App Privacy practices**, listing screenshot upload (until API deepen).
 
 ## Quick commands
 
@@ -183,4 +188,5 @@ pnpm metadata:upsert -- --dry-run && pnpm metadata:upsert
 - Hard API traps: [api-constraints.md](./api-constraints.md)
 - Scaffold: [scaffold.md](./scaffold.md)
 - Examples: [examples.md](./examples.md)
+- Local iOS build: [local-ios-ci.md](./local-ios-ci.md)
 - Click handoffs: [../firebase-launchpad/handoffs.md](../firebase-launchpad/handoffs.md)
