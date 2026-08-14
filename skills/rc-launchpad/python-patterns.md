@@ -145,10 +145,13 @@ def stack(children, direction="vertical", align="center", dist="start",
           margin=None, padding=None, shdw=None, overrides=None,
           scroll=None, name=""):
     # dimension.type = direction ("vertical"|"horizontal"|"zlayer")
-    # overflow = "scroll" only when scroll is set
+    # overflow = "scroll" only when scroll is set — do NOT set on the root on
+    # Android 9.x (RC already verticalScrolls the root; nested scroll crashes)
+    # padding/margin sides must be >= 0 (Android Compose PaddingValues crash)
     # bg_image → background { type:"image", fit_mode:"fill", value: source(...) }
 
 def image(manifest, key, width="fill", height="fit", fit="fit", margin=None, padding=None)
+    # padding/margin sides must be >= 0 — never box(top=-20) on images or stacks
 def text(lid, size=14, weight="regular", weight_int=400, color="#000000ff",
          align="center", width="fill", margin=None, padding=None)
     # text_lid MUST be exactly 10 characters; font_size MUST be int
@@ -169,12 +172,13 @@ EN = {"tctawj0000": "Start Premium", ...}   # every key len == 10
 TR = {...}
 
 def build(manifest):
+    # Android 9.x: RC wraps this in verticalScroll+weight. Do not also
+    # overflow-scroll or height-fill the root (infinity-height crash).
     root = stack(
         [...],
         bg_image="bg",
         manifest=manifest,
-        height="fill",
-        scroll="scroll",
+        height="fit",
         name="Content",
     )
     return {
@@ -247,8 +251,9 @@ parity: `width * 88/280`). Never `width=fill` + short height + `fit=fill`.
 ### Overlays
 
 ```python
-stack([back_image, front_text], direction="zlayer", align="top", width="fit",
-      margin=box(top=-22))
+# zlayer only — never negative margin (Android PaddingValues crash)
+stack([back_image, front_text], direction="zlayer", align="top", width="fit")
+# ribbons: normal vertical child, equal fixed height on both plan cards
 ```
 
 ## `publish_paywall.py`

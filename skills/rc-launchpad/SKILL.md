@@ -192,7 +192,8 @@ Hard limit ~2.8M base64 chars. Recipe: [python-patterns.md](python-patterns.md).
 
 ### Layout rules (high signal)
 
-- Sticky CTA on short phones: root `overflow: "scroll"` + `sticky_footer` with inner `type: "footer"`  
+- Sticky CTA: `sticky_footer` with inner `type: "footer"`. On Android **9.x** do **not** set root `overflow: "scroll"` or `height: "fill"` — RC already wraps the root in `verticalScroll` (nested scroll crash). Root `height: "fit"`, no `scroll=`.  
+- **Never** negative `padding` / `margin` on image **or** stack (Android `Top padding must be non-negative`). Overlap with `zlayer`, not `margin.top: -20`.  
 - Package chrome: base = unselected; selected look via `overrides` + `conditions: [{ "type": "selected" }]`  
 - Prices: `{{ product.price_per_period }}` etc. — never hardcode  
 - Flat `purchase_button` — do not use cropped CTA PNG plates  
@@ -247,11 +248,12 @@ Do **not** split this into a separate skill — keep monetization glue here.
 8. **Never pretend Play SA credentials were set via API** — open app settings + optional `pbcopy`; **user** pastes + Saves (see [../firebase-launchpad/handoffs.md](../firebase-launchpad/handoffs.md))  
 9. **Play SA must be GCP project Owner** — agents assume Owner so they can enable APIs, set IAM, and provision Pub/Sub/RTDN; if not Owner, stop and ask the user to grant it  
 10. Webhook grants must be **idempotent**; credit map lives in app constants  
+11. **Android Hosted UI 9.x:** no negative padding/margin anywhere; root stack `height: "fit"` and **no** `overflow: "scroll"` — see [paywall-constraints.md](paywall-constraints.md) § Android SDK crashes  
 
 ## Additional resources
 
 - [api-constraints.md](api-constraints.md) — catalog + shared API traps  
 - [catalog-patterns.md](catalog-patterns.md) — REST paths + bootstrap shape  
-- [paywall-constraints.md](paywall-constraints.md) — 400/422 paywall traps  
+- [paywall-constraints.md](paywall-constraints.md) — 400/422 **and Android render crashes**  
 - [python-patterns.md](python-patterns.md) — paywall script recipes  
 - [credits-bridge.md](credits-bridge.md) — RTDN + Supabase webhook / credits  
