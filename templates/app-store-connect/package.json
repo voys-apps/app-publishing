@@ -5,7 +5,8 @@
   "scripts": {
     "auth:check": "node ./src/auth-check.mjs",
     "app:resolve": "node ./src/resolve-app.mjs",
-    "metadata:upsert": "node ./src/upsert-version-localizations.mjs"
+    "metadata:upsert": "node ./src/upsert-version-localizations.mjs",
+    "ipa:upload": "node ./src/upload-ipa.mjs"
   },
   "dependencies": {
     "jose": "^5.9.6"

@@ -111,4 +111,14 @@ Age rating `409 ATTRIBUTE.TYPE` → boolean vs string mismatch.
 - Paid Apps agreement **accept** click
 - Listing screenshot/preview sets (deepen later)
 - Submit for Review (explicit user ask only)
-- IPA bytes via ASC API (local `pnpm build:ios`; upload with Transporter / `eas submit` **only if the user asks**)
+
+IPA bytes **are** in scope via ASC REST (`ipa:upload`). Never `eas submit`. Recipe + traps: [local-ios-ci.md](./local-ios-ci.md).
+
+### IPA `buildUploads` (live)
+
+- Create: `POST /v1/buildUploads` (`cfBundleShortVersionString`, `cfBundleVersion`, `platform: IOS`, `relationships.app`)
+- File: `POST /v1/buildUploadFiles` (`fileName`, `fileSize`, `assetType: ASSET`, `uti: com.apple.ipa`)
+- Chunks: `PUT` `uploadOperations` (no JWT on those URLs)
+- Commit: `PATCH /v1/buildUploadFiles/{id}` **`{ uploaded: true }` only**
+- `409` on `sourceFileChecksums` / `SHA_256` → drop checksums; do not invent algorithm names
+- EAS local `ENOTEMPTY` after “Build successful” → still upload the written `*.ipa`

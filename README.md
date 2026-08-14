@@ -116,7 +116,7 @@ Never commit service-account JSON, ASC `.p8` keys, or RC `sk_` keys.
 | `ASC_VERSION` | no | Marketing version e.g. `1.3.1` |
 | `ASC_TEAM_ID` | no | Developer Team ID |
 
-Node 18+ + `jose`. IPA upload: `eas submit` / Transporter (**not** Submit for Review).
+Node 18+ + `jose`. IPA → TestFlight: local `pnpm build:ios` then `pnpm --dir scripts/app-store-connect ipa:upload` (ASC REST). Never `eas submit`. Not Submit for Review.
 See skill `review-forms.md` for Unable to Add for Review blockers.
 
 ### rc-launchpad

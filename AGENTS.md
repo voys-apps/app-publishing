@@ -14,7 +14,7 @@ This repository is a **toolkit of Cursor skills + copyable templates** for shipp
 - Templates use `com.example.yourapp` placeholders only  
 - Play: monetization APIs, not legacy `inappproducts` when blocked  
 - Play SA JSON must be GCP project **Owner** so agents can enable APIs, IAM, and Pub/Sub/RTDN without mid-flow 403s — ask for Owner on permission denied, then use full powers  
-- ASC: **apc-launchpad** (JWT → metadata, IAP, App Information forms; IPA via `eas submit`; never Submit for Review unless asked; App Privacy practices Console)  
+- ASC: **apc-launchpad** (JWT → metadata, IAP, App Information forms; IPA via ASC `ipa:upload` / `buildUploads`, never `eas submit`; never Submit for Review unless asked; App Privacy practices Console)  
 - Firebase: **firebase-launchpad** (Management API apps + configs; Analytics ToS / APNs Console handoff)  
 - Auth: **auth-launchpad** (Google branding/clients Console handoff + Supabase Management API)  
 - RC: **rc-launchpad** (catalog via MCP/`templates/revenuecat` + Hosted UI Python)  

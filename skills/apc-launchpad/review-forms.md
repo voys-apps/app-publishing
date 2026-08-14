@@ -242,7 +242,7 @@ hard-refresh; verify with `GET .../prices?filter[territory]=USA`.
 ```bash
 eas credentials -p ios          # once if non-interactive build fails
 pnpm build:ios                  # eas build -p ios --profile production --local
-# pnpm submit:ios               # ONLY if the user asks — ASC / TestFlight, NOT App Review
+# pnpm --dir scripts/app-store-connect ipa:upload -- --ipa=./<file>.ipa   # ASC API → TestFlight; never eas submit
 ```
 
 Never EAS cloud (`build:ios:cloud`) unless the user asks. See [local-ios-ci.md](./local-ios-ci.md).

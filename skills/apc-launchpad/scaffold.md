@@ -101,7 +101,9 @@ export ASC_TEAM_ID="XXXXXXXXXX"
 5. If `REVIEW` set: GET/PATCH `appStoreReviewDetail`
 6. Support `--dry-run`
 
-## Binary (no scaffold script in v1)
+## Binary
 
+Copy `templates/app-store-connect/src/upload-ipa.mjs` with the rest of the ASC scripts.  
 Local IPA: `pnpm build:ios` (`--local`). Never EAS cloud unless asked.  
-Upload: Transporter or `eas submit` **only if the user asks**. Do not invent altool wrappers.
+Upload: `pnpm --dir scripts/app-store-connect ipa:upload -- --ipa=./<file>.ipa`. Never `eas submit`.  
+`--altool` only if REST 404. Commit PATCH is `uploaded: true` only — see [local-ios-ci.md](./local-ios-ci.md).

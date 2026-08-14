@@ -24,4 +24,13 @@ pnpm metadata:upsert -- --version=1.0.0
 
 See skill **apc-launchpad** for JWT traps, locale codes, and Transporter 409 notes.
 
-IPA upload stays out of band: `eas submit -p ios` or Apple Transporter.
+IPA upload is local ASC API (never `eas submit`). EAS is build-only:
+
+```bash
+pnpm build:ios
+pnpm --dir scripts/app-store-connect ipa:upload -- --ipa=./<file>.ipa
+```
+
+Commit is `PATCH /v1/buildUploadFiles/{id}` with `{ uploaded: true }` only.
+Do not send `sourceFileChecksums` (`SHA_256` → live 409). `--altool` only if REST 404.
+
