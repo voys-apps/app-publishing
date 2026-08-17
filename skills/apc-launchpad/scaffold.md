@@ -20,7 +20,11 @@ Or recreate the same layout below. Prefer **Node ESM + `jose`** (JWT ES256).
   "scripts": {
     "auth:check": "node ./src/auth-check.mjs",
     "app:resolve": "node ./src/resolve-app.mjs",
-    "metadata:upsert": "node ./src/upsert-version-localizations.mjs"
+    "metadata:upsert": "node ./src/upsert-version-localizations.mjs",
+    "ipa:upload": "node ./src/upload-ipa.mjs",
+    "ipa:upload-local": "node ./src/upload-ipa-local.mjs",
+    "ipa:validate": "node ./src/upload-ipa-local.mjs -- --validate-only",
+    "testflight:upsert-notes": "node ./src/upsert-beta-build-localizations.mjs"
   },
   "dependencies": {
     "jose": "^5.9.6"
@@ -42,6 +46,7 @@ Export:
 
 - `BUNDLE_ID` (or read `ASC_BUNDLE_ID`)
 - `VERSION_LOCALIZATIONS` map: locale → `{ whatsNew?, promotionalText?, description?, keywords?, supportUrl?, marketingUrl? }`
+- `TESTFLIGHT_BUILD_LOCALIZATIONS` map: locale → `{ whatsNew? }` for TestFlight “What to Test”
 - Optional `REVIEW`: `{ notes?, demoAccountName?, demoAccountPassword?, demoAccountRequired? }`
 - `assertMetadataLimits(locale, row)`
 
@@ -101,9 +106,7 @@ export ASC_TEAM_ID="XXXXXXXXXX"
 5. If `REVIEW` set: GET/PATCH `appStoreReviewDetail`
 6. Support `--dry-run`
 
-## Binary
+## Binary (no scaffold script in v1)
 
-Copy `templates/app-store-connect/src/upload-ipa.mjs` with the rest of the ASC scripts.  
 Local IPA: `pnpm build:ios` (`--local`). Never EAS cloud unless asked.  
-Upload: `pnpm --dir scripts/app-store-connect ipa:upload -- --ipa=./<file>.ipa`. Never `eas submit`.  
-`--altool` only if REST 404. Commit PATCH is `uploaded: true` only — see [local-ios-ci.md](./local-ios-ci.md).
+Upload: Transporter or `eas submit` **only if the user asks**. Do not invent altool wrappers.

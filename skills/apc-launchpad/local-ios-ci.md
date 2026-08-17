@@ -1,12 +1,12 @@
-# Local iOS CI/CD (EAS build only; ASC API upload)
+# Local iOS CI/CD (no EAS cloud build or submit)
 
 **Local first, always.** Use `pnpm build:ios` (`eas build -p ios --profile production --local`).  
 **Never** fall back to `build:ios:cloud` / EAS cloud unless the user explicitly asks for cloud.  
 If disk is full → free space and retry local. Do not “save the release” with cloud.
 
-**Never** `eas submit`. IPA → App Store Connect / TestFlight via **ASC REST** from the local machine (`scripts/app-store-connect` `ipa:upload`). EAS is **build only**.
+**Prefer local IPA upload** via `xcrun altool` + ASC API key — **not** `eas submit`, unless the user explicitly asks for EAS.
 
-Keep root app `package.json` scripts unchanged (do not add `ipa:upload` at repo root).
+Keep root app `package.json` scripts unchanged.
 
 ## `.easignore` (required for local)
 
@@ -16,47 +16,56 @@ Still exclude `.p8` / `**/secrets/**`. See [play-launchpad local-android-ci.md](
 ## Flow
 
 ```bash
-# 1) Local IPA — EAS only for this step
+# App repo — existing script (do not add new root scripts)
 pnpm build:ios
-# → *.ipa (path printed by eas; often project root; gitignored)
+# → *.ipa (path printed by eas; often project root)
 
-# 2) Upload to ASC / TestFlight — same .p8 as metadata (never eas submit)
-pnpm --dir scripts/app-store-connect ipa:upload -- --ipa=./<file>.ipa
+cd scripts/app-store-connect
+set -a && source ../../.env.local && set +a
+
+# 1) Validate IPA auth (no upload)
+pnpm ipa:validate -- --ipa=../../slide-ai-1.1.0-6.ipa
+
+# 2) Upload to TestFlight (no Apple ID login — ASC API key only)
+pnpm ipa:upload -- --ipa=../../slide-ai-1.1.0-6.ipa
+
+# 3) Store version metadata (What's New, promo)
+pnpm metadata:upsert -- --version=1.1.0
+
+# 4) TestFlight "What to Test" (after build appears in ASC, ~5–15 min)
+pnpm testflight:upsert-notes -- --version=1.1.0 --build=6 --wait-min=15
 ```
 
-`--altool` (`xcrun altool --upload-package` + the same ASC API key) **only** if `POST /v1/buildUploads` is **404**. Still not EAS.
+### Raw `altool` (no script)
 
-This does **not** Submit for Review.
+```bash
+set -a && source .env.local && set +a
 
-## Proven ASC REST (live, 2026)
+xcrun altool --upload-app \
+  -f ./slide-ai-1.1.0-6.ipa \
+  --apiKey "$ASC_KEY_ID" \
+  --apiIssuer "$ASC_ISSUER_ID" \
+  --p8-file-path ./scripts/app-store-connect/secrets/AuthKey_<KEY_ID>.p8
+```
 
-Script: `templates/app-store-connect/src/upload-ipa.mjs` → `ipa:upload`.
-
-1. `POST /v1/buildUploads`  
-   attributes: `cfBundleShortVersionString`, `cfBundleVersion`, `platform: "IOS"`  
-   relationship: `app` → ASC Apple ID
-2. `POST /v1/buildUploadFiles`  
-   attributes: `fileName`, `fileSize`, `assetType: "ASSET"`, `uti: "com.apple.ipa"`  
-   relationship: `buildUpload`
-3. `PUT` each `uploadOperations[]` chunk in order. **Do not** add `Authorization` (pre-signed URLs).
-4. `PATCH /v1/buildUploadFiles/{id}` with **only** `{ uploaded: true }`  
-   Then `GET /v1/buildUploads/{id}` — `state` is nested (`attributes.state.state`). Expect `PROCESSING`, then TestFlight in 5–30 min.
-
-### Live traps (do not “fix” these away)
-
-| Symptom | What to do |
-| --- | --- |
-| `409 ENTITY_ERROR.ATTRIBUTE.INVALID` on `sourceFileChecksums` (`file.algorithm` / `file.hash`) | Omit checksums. Commit is `uploaded: true` only. OpenAPI `SHA_256` + hex/base64 MD5 were rejected live. |
-| EAS prints **Build successful** + writes `./build-*.ipa`, then exits 1 `ENOTEMPTY` rmdir `…/build/.git` | Cleanup bug. **IPA is valid** — run `ipa:upload` on that file. Do not rebuild / do not cloud. |
-| Chunks PUT succeeded, PATCH failed | Resume: `--file-id=<buildUploadFiles id> --upload-id=<buildUploads id>` (no re-PUT). |
-| `POST /v1/buildUploads` **404** | `--altool` with the same `.p8`. |
+**No Apple ID / 2FA** when using `--apiKey` + `--apiIssuer` + `.p8`.
 
 ## Agent rules
 
 1. **Do not** use `eas build -p ios` without `--local`.
-2. **Never** `eas submit`, `--auto-submit`, or `build:ios:cloud` unless the user explicitly asks for cloud **build**.
-3. **Never** fall back to cloud. Local only; free disk and retry.
-4. Ensure `.easignore` exists and **does not** ignore `.env*`.
-5. Credentials: `eas credentials -p ios` once if local non-interactive fails (Distribution Cert + App Store profile).
-6. After a local IPA exists, upload with `ipa:upload`. Do not open Transporter / EAS Submit.
+2. **Do not** use `build:ios:cloud` / `--auto-submit` unless the user asks.
+3. **Default upload path:** `pnpm ipa:upload` (altool + ASC key). Use `eas submit` only if the user explicitly asks.
+4. **Never** fall back to cloud. Local only; free disk and retry.
+5. Ensure `.easignore` exists and **does not** ignore `.env*`.
+6. Credentials: `eas credentials -p ios` once if local non-interactive build fails (Distribution Cert + App Store profile).
 7. **Never Submit for Review** unless the user explicitly asks.
+8. ASC REST API does **not** upload `.ipa` binaries — only metadata. Binary upload = `altool` / Transporter.
+
+## Troubleshooting
+
+| Issue | Fix |
+| --- | --- |
+| `VERIFY/UPLOAD failed` | Re-sign IPA; check Distribution cert + App Store profile |
+| Build not in TestFlight yet | Wait 5–15 min; re-run `testflight:upsert-notes` with `--wait-min=15` |
+| `eas submit` credential error in CI | Use `ipa:upload` instead — no EAS Submit credentials needed |
+| Wrong app / 403 on metadata | Wrong-team `.p8` — run `pnpm auth:check` |

@@ -6,7 +6,10 @@
     "auth:check": "node ./src/auth-check.mjs",
     "app:resolve": "node ./src/resolve-app.mjs",
     "metadata:upsert": "node ./src/upsert-version-localizations.mjs",
-    "ipa:upload": "node ./src/upload-ipa.mjs"
+    "ipa:upload": "node ./src/upload-ipa.mjs",
+    "ipa:upload-local": "node ./src/upload-ipa-local.mjs",
+    "ipa:validate": "node ./src/upload-ipa-local.mjs -- --validate-only",
+    "testflight:upsert-notes": "node ./src/upsert-beta-build-localizations.mjs"
   },
   "dependencies": {
     "jose": "^5.9.6"

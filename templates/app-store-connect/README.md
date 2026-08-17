@@ -24,12 +24,19 @@ pnpm metadata:upsert -- --version=1.0.0
 
 See skill **apc-launchpad** for JWT traps, locale codes, and Transporter 409 notes.
 
-IPA upload is local ASC API (never `eas submit`). EAS is build-only:
+## Local IPA upload (no EAS Submit, no Apple ID login)
+
+**Preferred:** `xcrun altool` + ASC API key (`ipa:upload-local`). No Apple ID / 2FA.
 
 ```bash
 pnpm build:ios
-pnpm --dir scripts/app-store-connect ipa:upload -- --ipa=./<file>.ipa
+pnpm ipa:validate -- --ipa=../../app.ipa
+pnpm ipa:upload-local -- --ipa=../../app.ipa
+pnpm metadata:upsert -- --version=1.1.0
+pnpm testflight:upsert-notes -- --version=1.1.0 --build=6 --wait-min=15
 ```
+
+**Alternative:** ASC REST `buildUploads` (`ipa:upload`) — use `--altool` fallback if REST returns 404.
 
 Commit is `PATCH /v1/buildUploadFiles/{id}` with `{ uploaded: true }` only.
 Do not send `sourceFileChecksums` (`SHA_256` → live 409). `--altool` only if REST 404.

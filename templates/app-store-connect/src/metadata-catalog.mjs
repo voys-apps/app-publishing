@@ -22,6 +22,16 @@ export const BUNDLE_ID =
  */
 
 /** @type {Record<string, LocalizationRow>} */
+export const TESTFLIGHT_BUILD_LOCALIZATIONS = {
+  'en-US': {
+    whatsNew: 'What testers should focus on in this build (EN).'
+  },
+  tr: {
+    whatsNew: 'Bu buildde test edilmesi gerekenler (TR).'
+  }
+}
+
+/** @type {Record<string, LocalizationRow>} */
 export const VERSION_LOCALIZATIONS = {
   'en-US': {
     whatsNew: [
