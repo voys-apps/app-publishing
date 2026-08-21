@@ -136,3 +136,9 @@ pnpm testing:create-closed -- --dry-run
 
 Report: track name, type, release status, versionCodes, googleGroups.  
 Confirm target is **`alpha`** (or user override) and **not** `receezy*`.
+
+## After 12 testers × 14 days — production access
+
+When the Dashboard unlocks **Apply for production**, the questionnaire is
+**Console-only** (no Publisher API). Draft paste-ready answers from
+[production-access.md](./production-access.md) (app vs game wording).

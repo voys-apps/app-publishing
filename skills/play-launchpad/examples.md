@@ -65,3 +65,12 @@ User: “Day 6 oldu, r/TestersCommunity’ye post aç” / “Reddit post query 
 2. Write/update `docs/reddit-closed-testing-post.txt` with Day N/14 copy from Play status.
 3. Build `https://www.reddit.com/r/TestersCommunity/submit?title=…&text=…` and `open` it.
 4. User clicks Post — see [closed-testing.md](./closed-testing.md) “Open Reddit compose”.
+
+## Example H — Apply for production questionnaire (Console-only)
+
+User: “Production’a başvuracağım, cevapları yaz” / “Apply for production — app mı game mi”
+
+1. Confirm **app vs game**. API **cannot** submit — draft only.
+2. Read [production-access.md](./production-access.md); pull recruit channel, features, and recent closed builds from the repo.
+3. Paste-ready **English** answers, each text field **≤300** chars; suggest recruit-ease + install radios.
+4. User pastes in Console → **Apply**. Do not Playwright-fill unless explicitly asked.

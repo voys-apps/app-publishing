@@ -6,11 +6,13 @@ description: >-
   products and subscriptions (monetization APIs), closed testing tracks with
   Google Groups and optional Reddit tester-recruit handoffs (ask before
   create/post; open r/TestersCommunity compose via title/text query params),
-  and local AAB release drafts. Use when the user mentions Play Console, Play
-  Store listing, closed testing, Google Play IAP, Android Publisher API,
-  feature graphic upload, tester Google Group, Reddit closed test post,
-  TestersCommunity, or wants to avoid manual Play forms / Playwright for Play
-  setup. Works in any Android/React Native/Expo repo.
+  local AAB release drafts, and paste-ready Apply for production access
+  questionnaire answers (app vs game; Console-only — no API submit). Use when
+  the user mentions Play Console, Play Store listing, closed testing, Google
+  Play IAP, Android Publisher API, feature graphic upload, tester Google Group,
+  Reddit closed test post, TestersCommunity, apply for production, production
+  access questionnaire, or wants to avoid manual Play forms / Playwright for
+  Play setup. Works in any Android/React Native/Expo repo.
 ---
 
 # Play Launchpad
@@ -45,6 +47,7 @@ against live Google docs when writing or changing client code.
 | Local AAB publish | **Local first** — `pnpm build:android` + `testing:upload-aab`; never cloud unless asked — [local-android-ci.md](./local-android-ci.md) |
 | Closed testing + Google Group | existing **`alpha`**; never **`receezy*`**; never `tracks.create` — [closed-testing.md](./closed-testing.md) |
 | Optional Reddit recruit | **only if asked** → draft `docs/reddit-closed-testing-post.txt` → open `r/TestersCommunity` submit URL (`title` + `text` query params) — [closed-testing.md](./closed-testing.md) |
+| Apply for production access (questionnaire) | **Console-only** — draft ≤300-char EN answers (app vs game); user pastes + Apply — [production-access.md](./production-access.md) |
 | Data Safety CSV | `applications.dataSafety` (only with verified answers) |
 | Store listing graphics (icon / feature / screenshots) | **[`store-assets`](../store-assets/SKILL.md)** first (generate + size QA) → then this skill’s `listing:upload-assets` |
 
@@ -197,8 +200,10 @@ Local Android CI (build on machine, upload via API — **not** `eas submit`):
 
 ### Human click handoffs
 
-Console-only steps (RTDN topic paste, SA invite, first-publish Start rollout):
-**agent opens URL + prints clicks; user acts** — shared table in
+Console-only steps (RTDN topic paste, SA invite, first-publish Start rollout,
+**Apply for production** questionnaire):
+**agent opens URL / drafts answers; user clicks** — questionnaire:
+[production-access.md](./production-access.md); other handoffs:
 [firebase-launchpad/handoffs.md](../firebase-launchpad/handoffs.md).
 
 Pass `--dry-run` where supported. After mutations, re-list tracks / products /
@@ -210,5 +215,6 @@ listings and report IDs + statuses.
 - Scaffold checklist: [scaffold.md](./scaffold.md)
 - Example flows: [examples.md](./examples.md)
 - Closed testing + Reddit (ask first): [closed-testing.md](./closed-testing.md)
+- Apply for production questionnaire (app/game): [production-access.md](./production-access.md)
 - Local Android build + AAB upload: [local-android-ci.md](./local-android-ci.md)
 - Click handoffs: [../firebase-launchpad/handoffs.md](../firebase-launchpad/handoffs.md)

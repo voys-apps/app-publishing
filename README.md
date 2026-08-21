@@ -53,7 +53,7 @@ templates/
 
 | Skill | Use when |
 | --- | --- |
-| **play-launchpad** | Play listing, IAP/subs, closed testing, local AAB upload |
+| **play-launchpad** | Play listing, IAP/subs, closed testing, local AAB upload, production-access questionnaire drafts |
 | **apc-launchpad** | ASC metadata + IAP prices/review shots + App Information forms (category/age/rights); App Privacy practices Console |
 | **rc-launchpad** | RC catalog + paywalls + RTDN/Supabase credits webhook |
 | **store-assets** | Generate/resize 512 icon, 1024×500 feature, screenshots |
