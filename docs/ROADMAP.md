@@ -20,7 +20,7 @@ This repo should stay **store + monetization + Firebase provision + release auto
 
 | Piece | Role |
 | --- | --- |
-| `play-launchpad` | Play listing, IAP/subs, assets upload, closed testing, local AAB CI |
+| `play-launchpad` | Play listing, IAP/subs, assets upload, closed testing, local AAB CI, production-access questionnaire drafts |
 | `apc-launchpad` | ASC: metadata, IAP (prices/availability/review shots), app forms (category/age/content rights/free price), review-forms.md; New App + App Privacy practices Console |
 | `rc-launchpad` | Catalog + Hosted UI + **credits-bridge** (RTDN + Supabase webhook) |
 | `store-assets` | **Priority** — generate + exact-size QA (512 / 1024×500 / screenshots); upload via play-launchpad |
